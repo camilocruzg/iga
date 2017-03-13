@@ -202,7 +202,7 @@ def mutate(pop, prob):
 
 
 ###The evolutionary process itself
-#def evolve(pop,pop_size,gens,problem):
+#def evolve(pop,ind_size,generations,problem type):
 def evolve(pop_size, ind_size, gens, problem, pop=[]):
     _gens = gens
     pop = []
@@ -265,10 +265,15 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
         srtd_pop = [ind for front in fronts2 for ind in front]
         full_pop_out.append(srtd_pop)
         gens -= 1
+    print 'there are ', len(full_pop_out), 'in the pareto front'
+    print pareto_fronts_out
+    print values_out
+    print full_pop_out
     prompt1 = raw_input('Terminate? (Y/N): ')
     if prompt1 == 'Y':
-        print 'there are ', len(full_pop_out), 'in the pareto front'
-        return pareto_fronts_out, values_out, full_pop_out
+        exit()
+        # print 'there are ', len(full_pop_out), 'in the pareto front'
+        # return pareto_fronts_out, values_out, full_pop_out
     elif prompt1 == 'N':
         # _pop_size = pop_size
         # _ind_size = ind_size
@@ -288,6 +293,7 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
 
 
 s = (2, 3, 4)
-#def evolve(pop,pop_size,gens,problem):
+############################
+#def evolve(pop,ind_size,gens,problem):
 for i in evolve(100, s, 10, 'max')[1]:
     print i
