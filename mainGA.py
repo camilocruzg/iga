@@ -37,8 +37,7 @@ def walkability(ind):
                 deg += 1
         ###
         w.append(float(deg) / pot)
-    ar = sum(w) / len(g.keys(
-    ))  #accessibility ratio (how much of the potential accessibility is reached
+    ar = sum(w) / len(g.keys())  #accessibility ratio (how much of the potential accessibility is reached
     ind.values['walk'] = ar
     return ind.values['walk']
 
@@ -80,7 +79,7 @@ def structure(ind):
     ind.values['structure'] = float(sum(cols) / len(cols))
     return ind.values['structure']
 
-
+#TODO what's this? what does the different distance mean at line 91?
 ###Hamming Distance for encouraging diversity
 def hamming_dist(pop):
     for i, ind in enumerate(pop):
@@ -275,6 +274,7 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
         # _ind_size = ind_size
         # _gens = gens
         # _problem = problem
+        #TODO using try/except statement
         prompt2 = raw_input('seed population (enter list of indice up to %s): '
                             % (len(full_pop_out[0]) - 1))
         seed_pop = [
@@ -288,6 +288,6 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
 
 
 s = (2, 3, 4)
-
+#def evolve(pop,pop_size,gens,problem):
 for i in evolve(100, s, 10, 'max')[1]:
     print i
