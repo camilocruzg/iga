@@ -37,9 +37,8 @@ def walkability(ind):
                 deg += 1
         ###
         w.append(float(deg) / pot)
-    ar = sum(w) / len(
-        g.keys()
-    )  #accessibility ratio (how much of the potential accessibility is reached
+    ar = sum(w) / len(g.keys(
+    ))  #accessibility ratio (how much of the potential accessibility is reached
     ind.values['walk'] = ar
     return ind.values['walk']
 
@@ -56,8 +55,7 @@ def structure(ind):
         if x < ind.s[0]:  #right
             neigh.append(int(x + ind.xy + (y * (ind.s[0] * ind.s[2]))))
         if y < ind.s[1]:
-            neigh.append(
-                int(y + ind.xy + ind.xz + (x * (ind.s[1] * ind.s[2]))))
+            neigh.append(int(y + ind.xy + ind.xz + (x * (ind.s[1] * ind.s[2]))))
         if x > 0:
             neigh.append(int(x - 1 + ind.xy + (y * (ind.s[0] * ind.s[2]))))
         if y > 0:
@@ -283,8 +281,7 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
             full_pop_out[-1][seeded_ind]
             for seeded_ind in [int(ii) for ii in prompt2.split(',')]
         ]
-        print 'you have selected', len(
-            seed_pop), 'individuals to seed next gen'
+        print 'you have selected', len(seed_pop), 'individuals to seed next gen'
         return evolve(pop_size, ind_size, _gens, problem, seed_pop)
     else:
         return 'You have failed!'
