@@ -152,6 +152,7 @@ def sort_pop(pop, problem):
         rank = []
         for i in fronts[-1]:
             rank.append(len(i.dom))
+        #in python3, the key has to be declared with sourted() function
         fronts[-1] = [i for (r, i) in sorted(zip(rank, fronts[-1]), key = itemgetter(0),reverse=True)]
         new_pop = [i for j, i in enumerate(new_pop) if j not in rem]
     return fronts
