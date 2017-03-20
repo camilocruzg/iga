@@ -1,6 +1,6 @@
 __author__ = 'ccruz'
 import numpy as np
-import random
+# import random
 from random import uniform
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
@@ -194,7 +194,7 @@ class Individual(object):
         self.l = int(self.xy+self.xz+self.yz)
         self.p = probability
         self.s = size
-#        self.r = radius
+       # self.r = radius
         if ind == None:
             self.c = chr(self.l,self.p)
         else:

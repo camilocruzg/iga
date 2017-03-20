@@ -97,6 +97,7 @@ def hamming_dist(pop):
 
 ###GA functionality
 ###Sorting
+#TODO
 def sort_pop(pop, problem):
     new_pop = pop
     fronts = []
