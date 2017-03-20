@@ -76,7 +76,8 @@ def structure(ind):
             cols[i] = 1
         else:
             cols[i] = 0
-    ind.values['structure'] = float(sum(cols) / len(cols))
+    #TODO
+    ind.values['structure'] = sum(cols) / float(len(cols))
     return ind.values['structure']
 
 #TODO what's this? what does the different distance mean at line 91?
