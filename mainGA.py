@@ -125,9 +125,7 @@ def sort_pop(pop, problem):
         rank = []
         for i in fronts[-1]:
             rank.append(len(i.dom))
-        fronts[-1] = [
-            i for (r, i) in sorted(zip(rank, fronts[-1]), reverse=True)
-        ]
+        fronts[-1] = [i for (r, i) in sorted(zip(rank, fronts[-1]), reverse=True)]
         new_pop = [i for j, i in enumerate(new_pop) if j not in rem]
     return fronts
 
