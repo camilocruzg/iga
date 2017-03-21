@@ -1,54 +1,8 @@
 __author__ = 'ccruz'
 import numpy as np
 import random as rand
-# import matplotlib.pyplot as plt
 from math import log
 import math
-# from PIL import Image
-# from os import path
-# from classes import CA
-# import networkx
-# from networkx.algorithms.components.connected import connected_components as cc
-
-### Generates an array with unique elements from a 2D array
-def unique_rows(a):
-    a = np.ascontiguousarray(a)
-    unique_a = np.unique(a.view([('', a.dtype)]*a.shape[1]))
-    return unique_a.view(a.dtype).reshape((unique_a.shape[0], a.shape[1]))
-
-def cosine_similarity(v1,v2):
-    "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
-    sumxx, sumxy, sumyy = 0, 0, 0
-    for i in range(len(v1)):
-        x = v1[i]; y = v2[i]
-        sumxx += x*x
-        sumyy += y*y
-        sumxy += x*y
-    return sumxy/math.sqrt(sumxx*sumyy)
-
-def entropy(distr):
-    entr = []
-    for i in range(len(distr)):
-        h = []
-        for j in distr[i]:
-            if j > 0:
-                e = ((j/np.sum(distr[i]))*(log(((j+0.1)/np.sum(distr[i])),2)))
-            else:
-                e = 0.0
-            h.append(e)
-        entr.append(sum(h)*-1)
-    # norm_entr = [i/max(entr) for i in entr]
-    return entr
-
-### Function to find matches between a fixed config and the evol of a set of rules
-def match(benchmark, arr_set):
-    matches = np.zeros(np.size(arr_set,0), dtype=int)
-    for arr in range(np.size(arr_set,0)):
-        for row in range(np.size(arr_set[arr],0)):
-            for col in range(np.size(arr_set[arr],1)):
-                if arr_set[arr][row][col] == benchmark[row][col]:
-                    matches[arr]+=1
-    return matches
 
 ###Depth-First search (from eddmann.com)
 def dfs(g, start):
@@ -179,39 +133,6 @@ def find_shortest_path(graph, start, end, path=[]):
                     shortest = newpath
     return shortest
 
-
-###Identifies coordinates of walls that are on for each 2D space
-def draw_walls(arr):
-    w = {}
-    for row in range(np.size(arr,0)):
-        for col in range(np.size(arr,1)):
-            w[(row),(col)] = []
-            if arr[row][col]['links'][0]=='1':
-                w[(row,col)].append([(0,0),(1,0)])
-            if arr[row][col]['links'][1]=='1':
-                w[(row,col)].append([(0,0),(0,1)])
-            if arr[row][col]['links'][2]=='1':
-                w[(row,col)].append([(0,1),(1,1)])
-            if arr[row][col]['links'][3]=='1':
-                w[(row,col)].append([(1,1),(1,0)])
-    return w
-
-###Turns a Chromosome into a graph
-def connected(chr,s):
-    s2 = (s[0]+2,s[1]+2)
-    connected = []
-    for i in range(len(chr)):
-        if i < s[0]*(s[1]+1):
-            n = ((s2[0]*(i/s[0]))+((i%s[0])+1)) #Finds top neighbour of horizontal bits
-            if chr[i] == 0:
-                connected.append((n,n+s2[0]))
-        else:
-            sp = i-(s[0]*(s[1]+1))
-            pos = ((sp/s[1]),sp%s[1])
-            n = (pos[0]+s2[0])+(pos[1]*s2[0])
-            if chr[i] == 0:
-                connected.append((n,n+1))
-    return connected
 
 ###Following set of functions look for boundaries around a cell
 

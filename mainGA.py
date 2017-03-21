@@ -3,7 +3,7 @@ from myLib import Individual
 
 ###Evaluation functions
 
-###Walkability
+###Walkability: this function calculates the ratio of accessible horizontal subdivisions
 def walkability(ind):
     ###Get graph representation of individual
     g = ind.graph()
@@ -40,7 +40,7 @@ def walkability(ind):
     ind.values['walk'] = ar
     return ind.values['walk']
 
-###Structural elements
+###Structural elements: this function calculates the ratio of structural lines
 def structure(ind):
     cols = []
     for i in range(int((ind.s[0]+1)*(ind.s[1]+1))):
@@ -76,6 +76,10 @@ def structure(ind):
     ind.values['structure'] = float(sum(cols)/len(cols))
     return ind.values['structure']
 
+
+
+###GA functionality
+
 ###Hamming Distance for encouraging diversity
 def hamming_dist(pop):
     for i,ind in enumerate(pop):
@@ -90,8 +94,6 @@ def hamming_dist(pop):
         ind.hd = sum(hd)/(len(pop)-1)
     return pop
 
-
-###GA functionality
 ###Sorting
 def sort_pop(pop,problem):
     new_pop = pop
@@ -190,16 +192,51 @@ def mutate(pop,prob):
                 bit = abs(bit-1)
     return pop
 
+###K-means algorithm to present alternatives to user
+def kmeans(k,points,d,centroids=[]):
+    new_centroids = []
+    clusters = [[] for n in range(k)]
+    maxX = max(zip(*points)[0]) #Maximum value of X in the list of points being analised
+    maxY = max(zip(*points)[1]) #Maximum value of Y in the list of points being analised
+    ###Generate centroids
+    if len(centroids) < k:
+        for i in range(k):
+            centroid = (random.randrange(maxX),random.randrange(maxY))
+            centroids.append(centroid)
+    ###Cluster points based on dist to centroids
+    for pt in points:
+        dists = []
+        for c in centroids:
+            dists.append(e_dist(pt,c))
+        clusters[dists.index(min(dists))].append(pt)
+    ###Calculate new centroids
+    for cluster in clusters:
+        new_centroid = calc_centroid(cluster)
+        new_centroids.append(new_centroid)
+    cen_dist = [e_dist(centroids[i],new_centroids[i]) for i in range(k)]
+    ###If centroids are found...
+    if all([i<d for i in cen_dist]):
+        closest = []
+        for j, c in enumerate(new_centroids):
+            d = []
+            for pt in clusters[j]:
+                d.append(e_dist(c,pt))
+            closest.append(clusters[j][d.index(min(d))])
+        return closest
+    ###If centroids are still to be found...
+    else:
+        centroids = new_centroids
+        return kmeans(k,points,d,centroids)
 
 ###The evolutionary process itself
 #def evolve(pop,pop_size,gens,problem):
-def evolve(pop_size,ind_size,gens,problem,pop = []):
+def evolve(pop_size,ind_size,gens,problem,k,pop = []):
     _gens = gens
     pop = []
     ### check population size
     while len(pop) < pop_size:
         pop.append(Individual(ind_size))
-    print 'the population is ', len(pop), 'individuals'
+    print 'the population has', len(pop), 'individuals'
 
     ### evaluate population
     new_pop = pop
@@ -244,34 +281,57 @@ def evolve(pop_size,ind_size,gens,problem,pop = []):
             walkability(i)
             structure(i)
         hamming_dist(new_pop)
-        fronts2 = sort_pop(new_pop,problem)
-        pFront = fronts[0]
-        pFront2 = []
-        for ndf in pFront:
-            if ndf not in pFront2:
-                pFront2.append(ndf)
-        pareto_fronts_out.append(pFront2)
-        values_out.append([i.values for i in pFront2])
-        srtd_pop = [ind for front in fronts2 for ind in front]
-        full_pop_out.append(srtd_pop)
+
+        # fronts2 = sort_pop(new_pop,problem)
+        # nd_pop = [ind for front in fronts2 for ind in front[0]]
+        # print len(nd_pop)
+        # pFront = fronts2[0]
+        # pFront2 = []
+        # for ndf in pFront:
+        #     if ndf not in pFront2:
+        #         pFront2.append(ndf)
+        # pareto_fronts_out.append(pFront2)
+        # values_out.append([i.values for i in pFront2])
+        # srtd_pop = [ind for front in fronts2 for ind in front]
+        # full_pop_out.append(srtd_pop)
         gens-=1
+    fronts2 = sort_pop(new_pop,problem)
+    nd_pop = fronts2[0]
+    d_pop = [indiv for fr in fronts2[1:] for indiv in fr]
+
+    print len(fronts2)
+    # print 'the new population has', len(new_pop), 'individuals'
+    # print 'there are', len(nd_pop), 'non dominated individuals'
+    # print 'there are', len(d_pop), 'dominated individuals'
+
+    # print fronts2[0][0].values['structure']
+
+
+
+
+
+    # print 'there are', len(full_pop_out), 'in the pareto front'
+    # print pareto_fronts_out
+    # print values_out
+    # print full_pop_out[0]
     prompt1 = raw_input('Terminate? (Y/N): ')
     if prompt1 == 'Y':
-        print 'there are ', len(full_pop_out), 'in the pareto front'
         return pareto_fronts_out,values_out,full_pop_out
     elif prompt1 == 'N':
-        # _pop_size = pop_size
-        # _ind_size = ind_size
-        # _gens = gens
-        # _problem = problem
-        prompt2 = raw_input('seed population (enter list of indice up to %s): ' % (len(full_pop_out[0])-1))
-        seed_pop = [full_pop_out[-1][seeded_ind] for seeded_ind in [int(ii) for ii in prompt2.split(',')]]
+        pts = [(individual['structure'],individual['walk']) for individual in full_pop_out]
+        display = kmeans(k,pts,0.0001)
+        print display
+        prompt2 = raw_input('sellect individuals to seed population')
+        seed_pop = [
+            full_pop_out[-1][seeded_ind]
+            for seeded_ind in [int(ii) for ii in prompt2.split(',')]
+        ]
         print 'you have selected', len(seed_pop), 'individuals to seed next gen'
-        return evolve(pop_size,ind_size,_gens,problem,seed_pop)
+        return evolve(pop_size,ind_size,_gens,problem,k,seed_pop)
     else:
         return 'You have failed!'
 
 s = (2,3,4)
 
-for i in evolve(100,s,10,'max')[1]:
+for i in evolve(100, s, 10, 'max', k=5)[1]:
     print i
