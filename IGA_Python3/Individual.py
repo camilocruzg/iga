@@ -15,6 +15,7 @@ class Individual(object):
 
     Raise:
 
+
     '''
     def __init__(self,size,prob = 0.5,ind = None):
         self.xy = size[0] * size[1] * (size[2] + 1)

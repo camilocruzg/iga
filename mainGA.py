@@ -38,7 +38,7 @@ def walkability(ind):
         ###
         w.append(float(deg) / pot)
     ar = sum(w) / len(g.keys())  #accessibility ratio (how much of the potential accessibility is reached
-    ind.values['walk'] = ar
+    ind.values['walk'] = "%.3f" % ar
     return ind.values['walk']
 
 
@@ -76,9 +76,8 @@ def structure(ind):
             cols[i] = 1
         else:
             cols[i] = 0
-    #TODO
 
-    ind.values['structure'] = sum(cols) / float(len(cols))
+    ind.values['structure'] = "%.3f"%(sum(cols) / float(len(cols)))
     return ind.values['structure']
 
 ###Hamming Distance for encouraging diversity
@@ -278,7 +277,6 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
         # _ind_size = ind_size
         # _gens = gens
         # _problem = problem
-        #TODO using try/except statement
         prompt2 = raw_input('seed population (enter list of indice up to %s): '
                             % (len(full_pop_out[0]) - 1))
         seed_pop = [
