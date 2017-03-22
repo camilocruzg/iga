@@ -1,4 +1,4 @@
-import Individual
+import IGA_Python3.Individual
 from random import randint, random
 from operator import itemgetter, attrgetter
 
@@ -6,7 +6,7 @@ from operator import itemgetter, attrgetter
 def getEvolution(pop_size, ind_size, generation, problem, pop=[]):
     _gens = generation
     for i in range(pop_size):
-        pop.append(Individual.Individual(ind_size))
+        pop.append(IGA_Python3.Individual.Individual(ind_size))
     print ('the population is ', len(pop), 'individuals')
 
     ### evaluate population
@@ -259,8 +259,8 @@ def mate(pop):
             p = sorted([p1, p2])
             ni1 = pop[r1][:p[0]] + pop[r2][p[0]:p[1]] + pop[r1][p[1]:]
             ni2 = pop[r2][:p[0]] + pop[r1][p[0]:p[1]] + pop[r2][p[1]:]
-        new_ind1 = Individual.Individual(pop[0].size, pop[0].prob, ni1)
-        new_ind2 = Individual.Individual(pop[0].size, pop[0].prob, ni2)
+        new_ind1 = IGA_Python3.Individual.Individual(pop[0].size, pop[0].prob, ni1)
+        new_ind2 = IGA_Python3.Individual.Individual(pop[0].size, pop[0].prob, ni2)
         new_pop.append(new_ind1)
         new_pop.append(new_ind2)
     return new_pop

@@ -81,7 +81,6 @@ def structure(ind):
     ind.values['structure'] = sum(cols) / float(len(cols))
     return ind.values['structure']
 
-#TODO what's this? what does the different distance mean at line 91?
 ###Hamming Distance for encouraging diversity
 def hamming_dist(pop):
     for i, ind in enumerate(pop):
