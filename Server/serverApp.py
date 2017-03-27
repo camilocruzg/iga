@@ -16,11 +16,13 @@ def hello():
 def test():
     pop_size=request.form['popsize']
     ind_size=request.form['indsize']
+    gens=request.form['gens']
+    prob=request.form['problem']
+    # return "the number is %s and %s"%(pop_size,ind_size)
+    poplist = evolve(pop_size,ind_size,gens,prob)
+    return str(poplist)
 
-    return evolve(pop_size, ind_size)
 
-
-# Run the app :)
 if __name__ == '__main__':
   app.run(
         host="",

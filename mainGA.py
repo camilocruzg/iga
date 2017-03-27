@@ -287,9 +287,11 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
     else:
         return 'You have failed!'
 
+if __name__ == '__main__':
+    s = (2, 3, 4)
+    ############################
+    # def evolve(pop,ind_size,gens,problem):
+    for i in evolve(100, s, 10, 'max')[1]:
+        print i
 
-s = (2, 3, 4)
-############################
-#def evolve(pop,ind_size,gens,problem):
-for i in evolve(100, s, 10, 'max')[1]:
-    print i
+
