@@ -1,8 +1,6 @@
 from random import randint, random
 from myLib import Individual
-
 ###Evaluation functions
-
 
 ###Walkability
 def walkability(ind):
@@ -214,8 +212,9 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
     for i in new_pop:
         walkability(i)
         structure(i)
+    print "walkability and structure done"
     hamming_dist(new_pop)
-
+    print "hamming dist done"
     ### Pareto front for each generation will be stored in this list
     pareto_fronts_out = []
     ### Values for individuals in pareto front for each gen will be stored in this list
@@ -228,7 +227,6 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
         ### sort population
         fronts = sort_pop(new_pop, problem)
         sorted_pop = [ind for front in fronts for ind in front]
-
         ### elite population
         e_pop = []
         for ind in sorted_pop:
@@ -246,7 +244,7 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
         new_pop = e_pop + offspring
         for ind in new_pop:
             ind.clear_values()
-
+        print "test~~~~~~~~~~~~``"
         ### re_evaluate new_pop
         for i in new_pop:
             walkability(i)
@@ -263,6 +261,7 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
         srtd_pop = [ind for front in fronts2 for ind in front]
         full_pop_out.append(srtd_pop)
         gens -= 1
+        print "Number %dth loop is done"%(gens)
     print 'there are ', len(full_pop_out), 'in the pareto front'
     print pareto_fronts_out
     print values_out
