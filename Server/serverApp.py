@@ -1,3 +1,10 @@
+"""
+Usage:
+    curl -X POST localhost:1337/test -d "popsize=100&indsize=(2,3,4)&gens=5&problem=max"
+
+
+"""
+
 from flask import Flask, render_template, request, url_for
 from Functions import evolve
 
@@ -10,7 +17,7 @@ def form():
 @app.route('/hello', methods=['POST'])
 def hello():
     name=request.form['yourname']
-    return name
+    return "Welcome, ", name
 
 @app.route('/test',methods=['POST'])
 def test():
@@ -28,3 +35,4 @@ if __name__ == '__main__':
         host="",
         port=1337
   )
+

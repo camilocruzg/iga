@@ -79,6 +79,7 @@ def structure(ind):
     return ind.values['structure']
 
 ###Hamming Distance for encouraging diversity
+#TODO optimize this algorithm
 def hamming_dist(pop):
     for i, ind in enumerate(pop):
         hd = []
@@ -123,6 +124,7 @@ def sort_pop(pop, problem):
         for i in fronts[-1]:
             rank.append(len(i.dom))
         fronts[-1] = [i for (r, i) in sorted(zip(rank, fronts[-1]), reverse=True)]
+        #TODO what does this line stands for?
         new_pop = [i for j, i in enumerate(new_pop) if j not in rem]
     return fronts
 
@@ -201,7 +203,7 @@ def mutate(pop, prob):
 #def evolve(pop,ind_size,generations,problem type):
 def evolve(pop_size, ind_size, gens, problem, pop=[]):
     _gens = gens
-    pop = []
+    # pop = []
     ### check population size
     while len(pop) < pop_size:
         pop.append(Individual(ind_size))
@@ -283,6 +285,7 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
             for seeded_ind in [int(ii) for ii in prompt2.split(',')]
         ]
         print 'you have selected', len(seed_pop), 'individuals to seed next gen'
+        #TODO fixe the problem that seed_pop was not function at all
         return evolve(pop_size, ind_size, _gens, problem, seed_pop)
     else:
         return 'You have failed!'
@@ -291,7 +294,7 @@ if __name__ == '__main__':
     s = (2, 3, 4)
     ############################
     # def evolve(pop,ind_size,gens,problem):
-    for i in evolve(100, s, 10, 'max')[1]:
+    for i in evolve(50, s, 5, 'max')[1]:
         print i
 
 

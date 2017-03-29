@@ -308,7 +308,6 @@ class Individual(object):
                     dom.append(False)
         return bool(int(sum(dom)/len(self.values)))
 
-    #TODO using self.clear()
     def clear_values(self):
         self.values = {}
         return self
