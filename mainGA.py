@@ -80,6 +80,17 @@ def structure(ind):
 
 ###Hamming Distance for encouraging diversity
 #TODO optimize this algorithm
+# def getHammingDist(pop):
+#     for i in range(len(pop)):
+#         hd= []
+#         for j in range(len(pop)):
+#             if i != j:
+#                 var_dist = 0
+#                 for k in range(len(pop[0])):
+#                     if pop[i][k]!=pop[j][k]:
+#                         var_dist += 1
+#
+
 def hamming_dist(pop):
     for i, ind in enumerate(pop):
         hd = []
@@ -89,7 +100,8 @@ def hamming_dist(pop):
                 for b in range(int(ind.getLen())):
                     if ind[b] != other[b]:
                         dist += 1
-                hd.append(dist / ind.getLen())
+                hd.append(float(dist) / ind.getLen())
+        a = sum(hd) / (len(pop) - 1)
         ind.hd = sum(hd) / (len(pop) - 1)
     return pop
 

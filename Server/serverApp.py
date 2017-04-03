@@ -1,8 +1,6 @@
 """
 Usage:
     curl -X POST localhost:1337/test -d "popsize=100&indsize=(2,3,4)&gens=5&problem=max"
-
-
 """
 
 from flask import Flask, render_template, request, url_for
