@@ -70,7 +70,7 @@ def evolve(pop_size,ind_size,gens,problem,pop=[]):
         print "Number %dth loop is done"%(gens)
 
     # return pareto_fronts_out
-    return values_out
+    return srtd_pop
     # print 'there are ', len(full_pop_out), 'in the pareto front'
     # print pareto_fronts_out
     # print values_out

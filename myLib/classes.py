@@ -294,6 +294,7 @@ class Individual(object):
     ###Compares two individuals to check which one dominates
     def dominates(self, other, problem):
         dom = []
+        #TODO If there are 2 ture and 1 false, what do we want from this?
         if problem == 'min':
             for k in self.values.keys():
                 if self.values[k] < other.values[k]:

@@ -79,18 +79,6 @@ def structure(ind):
     return ind.values['structure']
 
 ###Hamming Distance for encouraging diversity
-#TODO optimize this algorithm
-# def getHammingDist(pop):
-#     for i in range(len(pop)):
-#         hd= []
-#         for j in range(len(pop)):
-#             if i != j:
-#                 var_dist = 0
-#                 for k in range(len(pop[0])):
-#                     if pop[i][k]!=pop[j][k]:
-#                         var_dist += 1
-#
-
 def hamming_dist(pop):
     for i, ind in enumerate(pop):
         hd = []
@@ -101,7 +89,6 @@ def hamming_dist(pop):
                     if ind[b] != other[b]:
                         dist += 1
                 hd.append(float(dist) / ind.getLen())
-        a = sum(hd) / (len(pop) - 1)
         ind.hd = sum(hd) / (len(pop) - 1)
     return pop
 
@@ -115,6 +102,8 @@ def sort_pop(pop, problem):
         fronts.append([])
         dom = []
         dom_by = []
+        #TODO use map funciton to do this
+        # map(lambda x,y:)
         #Evaluate dominance
         for i, ind in enumerate(new_pop):
             dom.append([])
@@ -136,7 +125,6 @@ def sort_pop(pop, problem):
         for i in fronts[-1]:
             rank.append(len(i.dom))
         fronts[-1] = [i for (r, i) in sorted(zip(rank, fronts[-1]), reverse=True)]
-        #TODO what does this line stands for?
         new_pop = [i for j, i in enumerate(new_pop) if j not in rem]
     return fronts
 
@@ -258,7 +246,6 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
         new_pop = e_pop + offspring
         for ind in new_pop:
             ind.clear_values()
-        print "test~~~~~~~~~~~~``"
         ### re_evaluate new_pop
         for i in new_pop:
             walkability(i)
@@ -297,7 +284,6 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
             for seeded_ind in [int(ii) for ii in prompt2.split(',')]
         ]
         print 'you have selected', len(seed_pop), 'individuals to seed next gen'
-        #TODO fixe the problem that seed_pop was not function at all
         return evolve(pop_size, ind_size, _gens, problem, seed_pop)
     else:
         return 'You have failed!'
