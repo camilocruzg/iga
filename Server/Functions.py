@@ -50,7 +50,6 @@ def evolve(pop_size,ind_size,gens,problem,pop=[]):
         new_pop = e_pop + offspring
         for ind in new_pop:
             ind.clear_values()
-        # print "test~~~~~~~~~~~~``"
         ### re_evaluate new_pop
         for i in new_pop:
             walkability(i)
