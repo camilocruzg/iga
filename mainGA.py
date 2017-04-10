@@ -122,55 +122,16 @@ def sort_pop_st(pop, problem):
             rank.append(len(dom[i]))
         #in python3, the key has to be declared with sorted() function
         fronts[-1] = [i for (r, i) in sorted(zip(rank, fronts[-1]), reverse=True)]
-    #     # new_pop = [i for j, i in enumerate(new_pop) if j not in rem]
         pop_ind = [i for i in pop_ind if i not in rem]
         for i in range(len(dom)):
             dom[i] = [j for j in dom[i] if j not in rem]
             dom_by[i] = [k for k in dom_by[i] if k not in rem]
-    #     # print(fronts, sorted(rank, reverse=True), rem, pop_ind )
 
     # fronts_ind = [pop[ind] for row in fronts for ind in row]
     ff = [[pop[i] for i in f] for f in fronts]
-    # print fronts_ind
-    # for each in fronts:
-    #     for item in each:
-    #         print pop[item]
 
     return ff
 ###GA functionality
-###Sorting
-def sort_pop(pop, problem):
-    new_pop = pop
-    fronts = []
-    while len(new_pop) > 0:
-        fronts.append([])
-        dom = []
-        dom_by = []
-        #TODO use map funciton to do this
-        # map(lambda x,y:)
-        #Evaluate dominance
-        for i, ind in enumerate(new_pop):
-            dom.append([])
-            dom_by.append([])
-            for j, other in enumerate(new_pop):
-                if i != j:
-                    if ind.dominates(other, problem):
-                        dom[i].append(j)
-                    if other.dominates(ind, problem):
-                        dom_by[i].append(j)
-            ind.dom = dom[i]
-            ind.dom_by = dom_by[i]
-        rem = []
-        for j, ind in enumerate(new_pop):
-            if len(ind.dom_by) == 0:
-                fronts[-1].append(ind)
-                rem.append(j)
-        rank = []
-        for i in fronts[-1]:
-            rank.append(len(i.dom))
-        fronts[-1] = [i for (r, i) in sorted(zip(rank, fronts[-1]), reverse=True)]
-        new_pop = [i for j, i in enumerate(new_pop) if j not in rem]
-    return fronts
 
 
 ###Tournament for selection

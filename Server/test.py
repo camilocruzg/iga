@@ -51,15 +51,15 @@ s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 s.connect(("localhost",1337))
 
 the_type = "Init"
-popsize = 50
+popsize = 100
 indsize = str((2, 3, 4))
-gens = 5
+gens = 10
 problem = "max"
 arg_json = {"type": the_type, "popsize": popsize, "indsize": indsize, "gens": gens, "problem": problem}
 # Protocol exchange - sends and receives
 s.send(str(arg_json))
 
-resp = s.recv(1024)
+resp = s.recv()
 # if resp == "": break
 print resp
 

@@ -1,4 +1,4 @@
-from mainGA import walkability,structure,hamming_dist,sort_pop,mutate,tournament,mate
+from mainGA import walkability,structure,hamming_dist,sort_pop_st,mutate,tournament,mate
 from myLib import Individual
 
 def evolve(pop_size,ind_size,gens,problem,pop=[]):
@@ -31,7 +31,7 @@ def evolve(pop_size,ind_size,gens,problem,pop=[]):
     ### Evolution starts here
     while gens > 0:
         ### sort population
-        fronts = sort_pop(new_pop, problem)
+        fronts = sort_pop_st(new_pop, problem)
         sorted_pop = [ind for front in fronts for ind in front]
         ### elite population
         e_pop = []
@@ -55,7 +55,7 @@ def evolve(pop_size,ind_size,gens,problem,pop=[]):
             walkability(i)
             structure(i)
         hamming_dist(new_pop)
-        fronts2 = sort_pop(new_pop, problem)
+        fronts2 = sort_pop_st(new_pop, problem)
         pFront = fronts[0]
         pFront2 = []
         for ndf in pFront:
@@ -69,7 +69,7 @@ def evolve(pop_size,ind_size,gens,problem,pop=[]):
         print "Number %dth loop is done"%(gens)
 
     # return pareto_fronts_out
-    return srtd_pop
+    return pareto_fronts_out
     # print 'there are ', len(full_pop_out), 'in the pareto front'
     # print pareto_fronts_out
     # print values_out
