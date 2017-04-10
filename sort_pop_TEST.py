@@ -113,8 +113,9 @@ def sort_pop_st(pop, problem):
         for i in range(len(dom)):
             dom[i] = [j for j in dom[i] if j not in rem]
             dom_by[i] = [k for k in dom_by[i] if k not in rem]
+    ff = [[pop[i] for i in f] for f in fronts]
     #     # print(fronts, sorted(rank, reverse=True), rem, pop_ind )
-    return fronts
+    return ff
 
 
 ### Eval pop
