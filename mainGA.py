@@ -121,14 +121,22 @@ def sort_pop_st(pop, problem):
         for i in fronts[-1]:
             rank.append(len(dom[i]))
         #in python3, the key has to be declared with sorted() function
-        fronts[-1] = [i for (r, i) in sorted(zip(rank, fronts[-1]),reverse=True)]
+        fronts[-1] = [i for (r, i) in sorted(zip(rank, fronts[-1]), reverse=True)]
     #     # new_pop = [i for j, i in enumerate(new_pop) if j not in rem]
         pop_ind = [i for i in pop_ind if i not in rem]
         for i in range(len(dom)):
             dom[i] = [j for j in dom[i] if j not in rem]
             dom_by[i] = [k for k in dom_by[i] if k not in rem]
     #     # print(fronts, sorted(rank, reverse=True), rem, pop_ind )
-    return fronts
+
+    # fronts_ind = [pop[ind] for row in fronts for ind in row]
+    ff = [[pop[i] for i in f] for f in fronts]
+    # print fronts_ind
+    # for each in fronts:
+    #     for item in each:
+    #         print pop[item]
+
+    return ff
 ###GA functionality
 ###Sorting
 def sort_pop(pop, problem):
@@ -164,42 +172,7 @@ def sort_pop(pop, problem):
         new_pop = [i for j, i in enumerate(new_pop) if j not in rem]
     return fronts
 
-def sort_pop2(pop, problem):
-    # new_pop is a list of pointers to the individuals in pop
-    pop_ind = [i for i in range(len(pop))] ###List of pointers to individuals in pop
-    # fronts is the output list
-    fronts = []
-    while len(pop_ind) > 0:
-        fronts.append([])
-        dom = []
-        dom_by = []
-        #Evaluate dominance
-        # start_dom = time.time()
-        for i,ind in enumerate(pop_ind):
-            dom.append([])
-            dom_by.append([])
-            for j,other in enumerate(pop_ind):
-                if ind != other:
-                    if pop[ind].dominates(pop[other], problem):
-                        dom[i].append(other)
-                    if pop[other].dominates(pop[ind], problem):
-                        dom_by[i].append(other)
-            pop[ind].dom = dom[i]
-            pop[ind].dom_by = dom_by[i]
-        rem = []
-        for i in pop_ind:
-            if len(pop[i].dom_by) == 0:
-                fronts[-1].append(i)
-                rem.append(i)
-        rank = []
-        for i in fronts[-1]:
-            rank.append(len(pop[i].dom))
-        #in python3, the key has to be declared with sorted() function
-        fronts[-1] = [i for (r, i) in sorted(zip(rank, fronts[-1]), reverse=True)]
-        # new_pop = [i for j, i in enumerate(new_pop) if j not in rem]
-        pop_ind = [i for i in pop_ind if i not in rem]
-        # print(fronts, sorted(rank, reverse=True), rem, pop_ind )
-    return fronts
+
 ###Tournament for selection
 def tournament(pop, p_len, problem):
     _pop = pop
@@ -297,16 +270,15 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
     ### Evolution starts here
     while gens > 0:
         ### sort population
-        fronts = sort_pop(new_pop, problem)
+        fronts = sort_pop_st(new_pop, problem)
         sorted_pop = [ind for front in fronts for ind in front]
-        for each in sorted_pop:
-            print new_pop[each]
+        # for each in sorted_pop:
+        #     print new_pop[each]
         ### elite population
         e_pop = []
         for ind in sorted_pop:
             if ind not in e_pop and len(e_pop) < int(len(new_pop) / 4):
                 e_pop.append(ind)
-
         ### mating pool
         m_pool = tournament(sorted_pop, len(new_pop) - len(e_pop), problem)
 
@@ -323,7 +295,7 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
             walkability(i)
             structure(i)
         hamming_dist(new_pop)
-        fronts2 = sort_pop(new_pop, problem)
+        fronts2 = sort_pop_st(new_pop, problem)
         pFront = fronts[0]
         pFront2 = []
         for ndf in pFront:

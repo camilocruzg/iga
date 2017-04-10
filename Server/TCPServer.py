@@ -3,7 +3,7 @@ import time
 from Functions import evolve
 tcpsocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
-tcpsocket.bind(("",1337))
+tcpsocket.bind(("", 1337))
 # ... and listen for anyone to contact you
 # queueing up to five requests if you get a backlog
 tcpsocket.listen(5)
