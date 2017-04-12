@@ -44,24 +44,21 @@ tcppart
 import socket
 
 # Set up a TCP/IP socket
-s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Connect as client to a selected server
-# on a specified port
-s.connect(("localhost",1337))
+
+tcp_socket.connect(("localhost", 1337))
 
 the_type = "Init"
-popsize = 100
+popsize = 50
 indsize = str((2, 3, 4))
-gens = 10
+gens = 5
 problem = "max"
 arg_json = {"type": the_type, "popsize": popsize, "indsize": indsize, "gens": gens, "problem": problem}
 # Protocol exchange - sends and receives
-s.send(str(arg_json))
+tcp_socket.send(str(arg_json))
 
-resp = s.recv()
-# if resp == "": break
+resp = tcp_socket.recv(4096)
 print resp
 
-s.close()
-# print "\ndone"
+tcp_socket.close()
