@@ -1,5 +1,87 @@
 from random import randint, random
 from myLib import Individual
+import sys
+import json
+def evolve(pop_size, ind_size, gens, problem, pop=[]):
+    gens=int(gens)
+    pop_size=int(pop_size)
+    ind_size=eval(ind_size)
+    ### check population size
+    while len(pop) < pop_size:
+        pop.append(Individual(ind_size))
+    print 'the population is ', len(pop), 'individuals'
+
+    ### evaluate population
+    new_pop = pop
+    for i in new_pop:
+        walkability(i)
+        structure(i)
+    # print "walkability and structure done"
+    hamming_dist(new_pop)
+    # print "hamming dist done"
+
+    # pareto_fronts_out = []
+    # values_out = []
+    # full_pop_out = []
+
+    ### Evolution starts here
+    while gens > 0:
+        ### sort population
+        fronts = sort_pop_st(new_pop, problem)
+        sorted_pop = [ind for front in fronts for ind in front]
+
+        ### elite population
+        elite_pop = []
+        for ind in sorted_pop:
+            if ind not in elite_pop and len(elite_pop) < int(len(new_pop) / 4):
+                elite_pop.append(ind)
+        ### mating pool
+        m_pool = tournament(sorted_pop, len(new_pop) - len(elite_pop), problem)
+
+        ### operate on mating pool
+        off_1 = mate(m_pool)
+        offspring = mutate(off_1, 0.05)
+
+        ### recompose population
+        new_pop = elite_pop + offspring
+        for ind in new_pop:
+            ind.clear_values()
+        ### re_evaluate new_pop
+        for i in new_pop:
+            walkability(i)
+            structure(i)
+        hamming_dist(new_pop)
+        fronts2 = sort_pop_st(new_pop, problem)
+        new_pop = [ind for front in fronts2 for ind in front]
+
+        # pFront = fronts[0]
+        # pFront2 = []
+        # for ndf in pFront:
+        #     if ndf not in pFront2:
+        #         pFront2.append(ndf)
+        # pareto_fronts_out.append(pFront2)
+        # values_out.append([i.values for i in pFront2])
+        # srtd_pop = [ind for front in fronts2 for ind in front]
+        # full_pop_out.append(srtd_pop)
+        print "Number %dth loop is done"%(gens)
+        gens -= 1
+    # print 'there are ', len(full_pop_out), 'in the pareto front'
+    # print pareto_fronts_out
+    # print values_out
+    # print full_pop_out
+
+    # output = get_json(new_pop)
+    json_output = json.dumps(get_json(new_pop))
+    # for each in output:
+    #     print type(each["graph"])
+    #     print type(each["values"])
+
+    print "the size of result is " + str(sys.getsizeof(json_output))
+    # for each in new_pop:
+    #     print each.values
+    #     print each
+    return json_output
+
 
 def walkability(ind):
     g = ind.graph()
@@ -116,9 +198,7 @@ def sort_pop_st(pop, problem):
 
     # fronts_ind = [pop[ind] for row in fronts for ind in row]
     ff = [[pop[i] for i in f] for f in fronts]
-
     return ff
-
 
 def tournament(pop, p_len, problem):
     _pop = pop
@@ -129,7 +209,6 @@ def tournament(pop, p_len, problem):
         ind = _pop[r1]
         other = _pop[r2]
         if not any([ind.dominates(other, problem), other.dominates(ind, problem)]):
-        # if ind.dominates(other, problem) and other.dominates(ind, problem) is False:
             if ind.hd > other.hd:
                 new_pop.append(ind)
                 _pop.remove(ind)
@@ -184,102 +263,18 @@ def mutate(pop, prob):
                 bit = abs(bit - 1)
     return pop
 
-
-###The evolutionary process itself
-#def evolve(pop,ind_size,generations,problem type):
-def evolve(pop_size, ind_size, gens, problem, pop=[]):
-    _gens = gens
-    # pop = []
-    ### check population size
-    while len(pop) < pop_size:
-        pop.append(Individual(ind_size))
-    print 'the population is ', len(pop), 'individuals'
-
-    ### evaluate population
-    new_pop = pop
-    for i in new_pop:
-        walkability(i)
-        structure(i)
-    print "walkability and structure done"
-    hamming_dist(new_pop)
-    print "hamming dist done"
-    ### Pareto front for each generation will be stored in this list
-    pareto_fronts_out = []
-    ### Values for individuals in pareto front for each gen will be stored in this list
-    values_out = []
-    ### Full pop will be stored here
-    full_pop_out = []
-
-    ### Evolution starts here
-    while gens > 0:
-        ### sort population
-        fronts = sort_pop_st(new_pop, problem)
-        sorted_pop = [ind for front in fronts for ind in front]
-        # for each in sorted_pop:
-        #     print new_pop[each]
-        ### elite population
-        elite_pop = []
-        for ind in sorted_pop:
-            if ind not in elite_pop and len(elite_pop) < int(len(new_pop) / 4):
-                elite_pop.append(ind)
-        ### mating pool
-        m_pool = tournament(sorted_pop, len(new_pop) - len(elite_pop), problem)
-
-        ### operate on mating pool
-        off_1 = mate(m_pool)
-        offspring = mutate(off_1, 0.05)
-
-        ### recompose population
-        new_pop = elite_pop + offspring
-        for ind in new_pop:
-            ind.clear_values()
-        ### re_evaluate new_pop
-        for i in new_pop:
-            walkability(i)
-            structure(i)
-        hamming_dist(new_pop)
-        fronts2 = sort_pop_st(new_pop, problem)
-        pFront = fronts[0]
-        pFront2 = []
-        for ndf in pFront:
-            if ndf not in pFront2:
-                pFront2.append(ndf)
-        pareto_fronts_out.append(pFront2)
-        values_out.append([i.values for i in pFront2])
-        srtd_pop = [ind for front in fronts2 for ind in front]
-        full_pop_out.append(srtd_pop)
-        gens -= 1
-        print "Number %dth loop is done"%(gens)
-    print 'there are ', len(full_pop_out), 'in the pareto front'
-    print pareto_fronts_out
-    print values_out
-    print full_pop_out
-    prompt1 = raw_input('Terminate? (Y/N): ')
-    if prompt1 == 'Y':
-        exit()
-        # print 'there are ', len(full_pop_out), 'in the pareto front'
-        # return pareto_fronts_out, values_out, full_pop_out
-    elif prompt1 == 'N':
-        # _pop_size = pop_size
-        # _ind_size = ind_size
-        # _gens = gens
-        # _problem = problem
-        prompt2 = raw_input('seed population (enter list of indice up to %s): '
-                            % (len(full_pop_out[0]) - 1))
-        seed_pop = [
-            full_pop_out[-1][seeded_ind]
-            for seeded_ind in [int(ii) for ii in prompt2.split(',')]
-        ]
-        print 'you have selected', len(seed_pop), 'individuals to seed next gen'
-        return evolve(pop_size, ind_size, _gens, problem, seed_pop)
-    else:
-        return 'You have failed!'
+def get_json(pop):
+    output = []
+    for each in pop:
+        ind_dict = {"graph": [], "values": {}}
+        ind_dict["graph"] = list(each)
+        ind_dict["values"] = each.values
+        output.append(ind_dict)
+    return output
 
 if __name__ == '__main__':
     s = (2, 3, 4)
-    ############################
-    # def evolve(pop,ind_size,gens,problem):
-    for i in evolve(50, s, 5, 'max')[1]:
-        print i
+
+    evolve(50, s, 5, 'max')
 
 

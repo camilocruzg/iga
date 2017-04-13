@@ -42,7 +42,7 @@ tcppart
 """
 
 import socket
-
+import sys
 # Set up a TCP/IP socket
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -58,7 +58,8 @@ arg_json = {"type": the_type, "popsize": popsize, "indsize": indsize, "gens": ge
 # Protocol exchange - sends and receives
 tcp_socket.send(str(arg_json))
 
-resp = tcp_socket.recv(4096)
+resp = tcp_socket.recv(40960)
+# print sys.getsizeof(resp)
 print resp
 
 tcp_socket.close()
