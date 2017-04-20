@@ -46,49 +46,75 @@ import pickle
 import Init_Ind
 import sys
 def recvall(sock):
-    var = 0
     BUFF_SIZE = 4096 # 4 KiB
     data = ""
     while True:
         part = sock.recv(BUFF_SIZE)
         data += part
-        print len(part)
         if len(part) < BUFF_SIZE:
-            print sys.getsizeof(part)
-            # either 0 or end of data
             break
-        var += 1
-        print var
     return data
 
-# Set up a TCP/IP socket
-tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+def tcp_con():
+    tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    tcp_socket.connect(("localhost", 1337))
+
+    the_type = "Init"
+    popsize = 50
+    indsize = str((2, 3, 4))
+    gens = 5
+    problem = "max"
+    arg_json = {"type": the_type, "popsize": popsize, "indsize": indsize, "gens": gens, "problem": problem}
+    # Protocol exchange - sends and receives
+    tcp_socket.send(str(arg_json))
+
+    # resp = tcp_socket.recv(81920)
+    # print resp
+    # result = pickle.loads(resp)
+    # # print type(result)
+    # print result
+
+    data = recvall(tcp_socket)
+    result = pickle.loads(data)
+
+    tcp_socket.close()
+    return result
 
 
-tcp_socket.connect(("localhost", 1337))
+if __name__ == '__main__':
+    out = tcp_con()
 
-the_type = "Init"
-popsize = 50
-indsize = str((2, 3, 4))
-gens = 5
-problem = "max"
-arg_json = {"type": the_type, "popsize": popsize, "indsize": indsize, "gens": gens, "problem": problem}
-# Protocol exchange - sends and receives
-tcp_socket.send(str(arg_json))
-
-# resp = tcp_socket.recv(81920)
-# print resp
-# result = pickle.loads(resp)
-# # print type(result)
-# print result
-
-data = recvall(tcp_socket)
-result = pickle.loads(data)
-
-print result[1].dom
+    print out
 
 
-tcp_socket.close()
+# # Set up a TCP/IP socket
+# tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#
+#
+# tcp_socket.connect(("localhost", 1337))
+#
+# the_type = "Init"
+# popsize = 50
+# indsize = str((2, 3, 4))
+# gens = 5
+# problem = "max"
+# arg_json = {"type": the_type, "popsize": popsize, "indsize": indsize, "gens": gens, "problem": problem}
+# # Protocol exchange - sends and receives
+# tcp_socket.send(str(arg_json))
+#
+# # resp = tcp_socket.recv(81920)
+# # print resp
+# # result = pickle.loads(resp)
+# # # print type(result)
+# # print result
+#
+# data = recvall(tcp_socket)
+# result = pickle.loads(data)
+
+
+
 
 test_data = [[1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0]
     ,[1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
