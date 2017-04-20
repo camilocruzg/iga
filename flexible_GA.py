@@ -1,10 +1,8 @@
 from random import randint, random
-# from myLib import Individual
 import sys
 import pickle
 from Init_Ind import Individual
 
-import json
 def evolve(pop_size, ind_size, gens, problem, pop=[]):
     gens=int(gens)
     pop_size=int(pop_size)

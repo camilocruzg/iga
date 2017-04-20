@@ -45,12 +45,14 @@ import socket
 import pickle
 import Init_Ind
 import sys
+#TODO can't work in windows
 def recvall(sock):
-    BUFF_SIZE = 4096 # 4 KiB
+    BUFF_SIZE = 8192 # 8 KiB
     data = ""
     while True:
         part = sock.recv(BUFF_SIZE)
         data += part
+        print sys.getsizeof(part)
         if len(part) < BUFF_SIZE:
             break
     return data
@@ -84,38 +86,10 @@ def tcp_con():
 
 
 if __name__ == '__main__':
-    out = tcp_con()
+    result = tcp_con()
+    pop = []
+    for each in result:
+        pop.append(each)
+    print pop
 
-    print out
-
-
-# # Set up a TCP/IP socket
-# tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#
-#
-# tcp_socket.connect(("localhost", 1337))
-#
-# the_type = "Init"
-# popsize = 50
-# indsize = str((2, 3, 4))
-# gens = 5
-# problem = "max"
-# arg_json = {"type": the_type, "popsize": popsize, "indsize": indsize, "gens": gens, "problem": problem}
-# # Protocol exchange - sends and receives
-# tcp_socket.send(str(arg_json))
-#
-# # resp = tcp_socket.recv(81920)
-# # print resp
-# # result = pickle.loads(resp)
-# # # print type(result)
-# # print result
-#
-# data = recvall(tcp_socket)
-# result = pickle.loads(data)
-
-
-
-
-test_data = [[1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0]
-    ,[1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
-
+    # print out
