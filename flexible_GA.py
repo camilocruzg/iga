@@ -1,7 +1,9 @@
 from random import randint, random
-from myLib import Individual
+# from myLib import Individual
 import sys
 import pickle
+from Init_Ind import Individual
+
 import json
 def evolve(pop_size, ind_size, gens, problem, pop=[]):
     gens=int(gens)
@@ -71,7 +73,7 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
     # print values_out
     # print full_pop_out
 
-    output = pickle.dumps(new_pop)
+    output = pickle.dumps(new_pop[:10])
 
     # json_output = json.dumps(get_json(new_pop))
 
@@ -274,6 +276,8 @@ def get_json(pop):
         ind_dict["values"] = each.values
         output.append(ind_dict)
     return output
+
+
 
 if __name__ == '__main__':
     s = (2, 3, 4)

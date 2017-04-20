@@ -65,7 +65,7 @@ resp = tcp_socket.recv(81920)
 # print resp
 result = pickle.loads(resp)
 # print type(result)
-print result
+print result[0].dom
 
 
 tcp_socket.close()
