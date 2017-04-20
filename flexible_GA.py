@@ -1,6 +1,7 @@
 from random import randint, random
 from myLib import Individual
 import sys
+import pickle
 import json
 def evolve(pop_size, ind_size, gens, problem, pop=[]):
     gens=int(gens)
@@ -70,17 +71,19 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
     # print values_out
     # print full_pop_out
 
-    # output = get_json(new_pop)
-    json_output = json.dumps(get_json(new_pop))
+    output = pickle.dumps(new_pop)
+
+    # json_output = json.dumps(get_json(new_pop))
+
     # for each in output:
     #     print type(each["graph"])
     #     print type(each["values"])
 
-    print "the size of result is " + str(sys.getsizeof(json_output))
+    print "the size of result is " + str(sys.getsizeof(output))
     # for each in new_pop:
     #     print each.values
     #     print each
-    return json_output
+    return output
 
 
 def walkability(ind):

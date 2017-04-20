@@ -42,6 +42,7 @@ tcppart
 """
 
 import socket
+import pickle
 import sys
 # Set up a TCP/IP socket
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -58,8 +59,15 @@ arg_json = {"type": the_type, "popsize": popsize, "indsize": indsize, "gens": ge
 # Protocol exchange - sends and receives
 tcp_socket.send(str(arg_json))
 
-resp = tcp_socket.recv(40960)
-# print sys.getsizeof(resp)
-print resp
+resp = tcp_socket.recv(81920)
+# print resp
+result = pickle.loads(resp)
+# print type(result)
+print result
+
 
 tcp_socket.close()
+
+test_data = [[1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0]
+    ,[1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+
