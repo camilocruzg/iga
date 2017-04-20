@@ -73,7 +73,7 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
     # print values_out
     # print full_pop_out
 
-    output = pickle.dumps(new_pop[:10])
+    output = pickle.dumps(new_pop)
 
     # json_output = json.dumps(get_json(new_pop))
 

@@ -45,6 +45,21 @@ import socket
 import pickle
 import Init_Ind
 import sys
+def recvall(sock):
+    var = 0
+    BUFF_SIZE = 4096 # 4 KiB
+    data = ""
+    while True:
+        part = sock.recv(BUFF_SIZE)
+        data += part
+        print len(part)
+        if len(part) < BUFF_SIZE:
+            print sys.getsizeof(part)
+            # either 0 or end of data
+            break
+        var += 1
+        print var
+    return data
 
 # Set up a TCP/IP socket
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -61,11 +76,16 @@ arg_json = {"type": the_type, "popsize": popsize, "indsize": indsize, "gens": ge
 # Protocol exchange - sends and receives
 tcp_socket.send(str(arg_json))
 
-resp = tcp_socket.recv(81920)
+# resp = tcp_socket.recv(81920)
 # print resp
-result = pickle.loads(resp)
-# print type(result)
-print result[0].dom
+# result = pickle.loads(resp)
+# # print type(result)
+# print result
+
+data = recvall(tcp_socket)
+result = pickle.loads(data)
+
+print result[1].dom
 
 
 tcp_socket.close()
