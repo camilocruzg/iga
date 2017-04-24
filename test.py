@@ -61,7 +61,7 @@ def recvall(sock):
 def tcp_con():
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    tcp_socket.connect(("localhost", 1337))
+    tcp_socket.connect(("localhost", 4000))
 
     the_type = "Init"
     popsize = 50
@@ -81,7 +81,7 @@ def tcp_con():
     data = recvall(tcp_socket)
     result = pickle.loads(data)
 
-    tcp_socket.close()
+    # tcp_socket.close()
     return result
 
 

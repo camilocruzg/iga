@@ -26,7 +26,7 @@ class myThread (threading.Thread):
             pass
         connect.send(poplist)
         print "Exiting " + self.name
-        # connect.close()
+        connect.close()
 
 
 

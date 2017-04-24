@@ -125,6 +125,14 @@ class Individual(object):
                 else:
                     dom.append(False)
         elif problem == 'max':
+            # for k in self.values.keys():
+            #     try:
+            #         if self.values[k] > other.values[k]:
+            #             dom.append(True)
+            #         else:
+            #             dom.append(False)
+            #     except:
+            #         dom.append(False)
             for k in self.values.keys():
                 if self.values[k] > other.values[k]:
                     dom.append(True)

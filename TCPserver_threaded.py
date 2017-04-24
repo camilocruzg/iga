@@ -23,60 +23,30 @@ class ThreadedServer(object):
 
     def listenToClient(self, connect, address):
         while True:
-            # print "receiving data from " + str(address)
             try:
                 data = (connect.recv(1024)).strip()
                 if data:
-                    print data
+                    print threading.current_thread().getName() + " is receiving request with " + data
+                    # print data
                     recv_data = eval(data)
                     poplist = []
                     if recv_data["type"] == "Init":
-                        poplist = flexible_GA.evolve(recv_data["popsize"], recv_data["indsize"], recv_data["gens"],
-                                                     recv_data["problem"])
-
-                        # print "the size of sending is  "+str(sys.getsizeof(poplist))
-                        # print type(poplist)
-                        # pop_to_send = pickle.dumps(poplist)
-                        print "the size of sending is  " + str(sys.getsizeof(poplist))
+                        # print threading.current_thread().getName() + " start initializing "
+                        poplist = flexible_GA.evolve1(recv_data["popsize"], recv_data["indsize"], recv_data["gens"], recv_data["problem"])
+                        # print threading.current_thread().getName() + " the size of result is " + str(sys.getsizeof(poplist))
+                        # print threading.current_thread().getName() + " all good"
 
                     elif recv_data["type"] == "Seed":
-                        poplist = flexible_GA.evolve(recv_data["popsize"], recv_data["indsize"], recv_data["gens"],
-                                                     recv_data["problem"], recv_data["pop"])
+                        poplist = flexible_GA.evolve(recv_data["popsize"], recv_data["indsize"], recv_data["gens"], recv_data["problem"], recv_data["pop"])
                         pass
                     connect.send(poplist)
+                    print threading.current_thread().getName() + " send the data with size of " + str(sys.getsizeof(poplist))
 
-            except:
-                raise Exception("empty")
-            # print data
-            # recv_data = eval(data)
-            # poplist = []
-            # if recv_data["type"] == "Init":
-            #     poplist = flexible_GA.evolve(recv_data["popsize"], recv_data["indsize"], recv_data["gens"],
-            #                                  recv_data["problem"])
-            #
-            #     # print "the size of sending is  "+str(sys.getsizeof(poplist))
-            #     # print type(poplist)
-            #     # pop_to_send = pickle.dumps(poplist)
-            #     print "the size of sending is  " + str(sys.getsizeof(poplist))
-            #
-            # elif recv_data["type"] == "Seed":
-            #     poplist = flexible_GA.evolve(recv_data["popsize"], recv_data["indsize"], recv_data["gens"],
-            #                                  recv_data["problem"], recv_data["pop"])
-            #     pass
-            # connect.send(poplist)
-            # connect.close()
-
-            # try:
-            #     data = client.recv(size)
-            #     if data:
-            #         # Set the response to echo back the recieved data
-            #         response = data
-            #         client.send(response)
-            #     else:
-            #         raise Exception('Client disconnected')
-            # except:
-            #     client.close()
-            #     return False
+            except Exception as ex:
+                print threading.current_thread().getName() + " is quiting with error: ", ex
+                # print sys.exc_traceback.tb_lineno
+                connect.close()
+                return False
 
 if __name__ == "__main__":
-    ThreadedServer('',1337).listen()
+    ThreadedServer('',4000).listen()

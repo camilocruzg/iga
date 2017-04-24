@@ -2,6 +2,7 @@ from random import randint, random
 import sys
 import pickle
 from Init_Ind import Individual
+import traceback
 
 def evolve(pop_size, ind_size, gens, problem, pop=[]):
     gens=int(gens)
@@ -10,7 +11,7 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
     ### check population size
     while len(pop) < pop_size:
         pop.append(Individual(ind_size))
-    print 'the population is ', len(pop), 'individuals'
+    # print 'the population is ', len(pop), 'individuals'
 
     ### evaluate population
     new_pop = pop
@@ -64,7 +65,7 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
         # values_out.append([i.values for i in pFront2])
         # srtd_pop = [ind for front in fronts2 for ind in front]
         # full_pop_out.append(srtd_pop)
-        print "Number %dth loop is done"%(gens)
+        # print "Number %dth loop is done"%(gens)
         gens -= 1
     # print 'there are ', len(full_pop_out), 'in the pareto front'
     # print pareto_fronts_out
@@ -79,7 +80,7 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
     #     print type(each["graph"])
     #     print type(each["values"])
 
-    print "the size of result is " + str(sys.getsizeof(output))
+    # print "the size of result is " + str(sys.getsizeof(output))
     # for each in new_pop:
     #     print each.values
     #     print each
@@ -121,8 +122,8 @@ def structure(ind):
     for i, col in enumerate(cols):
         x = int(i % (ind.s[0] + 1))
         y = int(i // (ind.s[0] + 1))
-        neigh = []  #right, front, left, back
-        if x < ind.s[0]:  #right
+        neigh = []  # right, front, left, back
+        if x < ind.s[0]:  # right
             neigh.append(int(x + ind.xy + (y * (ind.s[0] * ind.s[2]))))
         if y < ind.s[1]:
             neigh.append(int(y + ind.xy + ind.xz + (x * (ind.s[1] * ind.s[2]))))
@@ -148,7 +149,7 @@ def structure(ind):
         else:
             cols[i] = 0
 
-    ind.values['structure'] = "%.3f"%(sum(cols) / float(len(cols)))
+    ind.values['structure'] = "%.3f" % (sum(cols) / float(len(cols)))
     return ind.values['structure']
 
 def hamming_dist(pop):
@@ -165,43 +166,59 @@ def hamming_dist(pop):
     return pop
 
 def sort_pop_st(pop, problem):
-    # new_pop is a list of pointers to the individuals in pop
-    pop_ind = [i for i in range(len(pop))] ###List of pointers to individuals in pop
-    # fronts is the output list
-    fronts = []
-    dom = []
-    dom_by = []
-    for i, ind in enumerate(pop_ind):
-        dom.append([])
-        dom_by.append([])
-        for j, other in enumerate(pop_ind):
-            if ind != other:
-                if pop[ind].dominates(pop[other], problem):
-                    dom[i].append(other)
-                if pop[other].dominates(pop[ind], problem):
-                    dom_by[i].append(other)
-        pop[ind].dom = dom[i]
-        pop[ind].dom_by = dom_by[i]
-    while len(pop_ind) > 0:
-        fronts.append([])
-        rem = []
-        for i in range(len(pop_ind)):
-            if len(dom_by[pop_ind[i]]) == 0:
-                fronts[-1].append(pop_ind[i])
-                rem.append(pop_ind[i])
-        rank = []
-        for i in fronts[-1]:
-            rank.append(len(dom[i]))
-        #in python3, the key has to be declared with sorted() function
-        fronts[-1] = [i for (r, i) in sorted(zip(rank, fronts[-1]), reverse=True)]
-        pop_ind = [i for i in pop_ind if i not in rem]
-        for i in range(len(dom)):
-            dom[i] = [j for j in dom[i] if j not in rem]
-            dom_by[i] = [k for k in dom_by[i] if k not in rem]
+    foo = 0
+    bar = 0
+    try:
+        # new_pop is a list of pointers to the individuals in pop
+        pop_ind = [i for i in range(len(pop))]  ###List of pointers to individuals in pop
+        # fronts is the output list
+        fronts = []
+        dom = []
+        dom_by = []
+        for i, ind in enumerate(pop_ind):
+            dom.append([])
+            dom_by.append([])
 
-    # fronts_ind = [pop[ind] for row in fronts for ind in row]
-    ff = [[pop[i] for i in f] for f in fronts]
-    return ff
+            for j, other in enumerate(pop_ind):
+                if ind != other:
+                    if pop[ind].dominates(pop[other], problem):
+                        dom[i].append(other)
+                    if pop[other].dominates(pop[ind], problem):
+                        dom_by[i].append(other)
+                bar += 1
+            pop[ind].dom = dom[i]
+            pop[ind].dom_by = dom_by[i]
+            foo += 1
+        while len(pop_ind) > 0:
+            fronts.append([])
+            rem = []
+            for i in range(len(pop_ind)):
+                if len(dom_by[pop_ind[i]]) == 0:
+                    fronts[-1].append(pop_ind[i])
+                    rem.append(pop_ind[i])
+            rank = []
+            for i in fronts[-1]:
+                rank.append(len(dom[i]))
+            # in python3, the key has to be declared with sorted() function
+            fronts[-1] = [i for (r, i) in sorted(zip(rank, fronts[-1]), reverse=True)]
+            pop_ind = [i for i in pop_ind if i not in rem]
+            for i in range(len(dom)):
+                dom[i] = [j for j in dom[i] if j not in rem]
+                dom_by[i] = [k for k in dom_by[i] if k not in rem]
+
+        # fronts_ind = [pop[ind] for row in fronts for ind in row]
+        ff = [[pop[i] for i in f] for f in fronts]
+        return ff
+    except Exception as ex:
+        print str(foo), " and ", str(bar)
+        print pop[foo].values, pop[foo]
+        print pop[bar%50].values, pop[bar%50]
+        # print pop[(bar % 50) - 1].values
+        # for each in pop:
+        #     print each.values["structure"]
+        print "sort ->", traceback.print_exc()
+        print "sort -> " , ex
+        # print "sort -> " + str(sys.exc_traceback.tb_lineno)
 
 def tournament(pop, p_len, problem):
     _pop = pop
@@ -274,6 +291,58 @@ def get_json(pop):
         ind_dict["values"] = each.values
         output.append(ind_dict)
     return output
+
+def evolve1(pop_size, ind_size, gens, problem, pop=[]):
+    try:
+        gens = int(gens)
+        pop_size = int(pop_size)
+        ind_size = eval(ind_size)
+        while len(pop) < pop_size:
+            pop.append(Individual(ind_size))
+
+        new_pop = pop
+        for i in new_pop:
+            walkability(i)
+            structure(i)
+        hamming_dist(new_pop)
+
+        while gens > 0:
+            ### sort population
+            fronts = sort_pop_st(new_pop, problem)
+            sorted_pop = [ind for front in fronts for ind in front]
+
+            ### elite population
+            elite_pop = []
+            for ind in sorted_pop:
+                if ind not in elite_pop and len(elite_pop) < int(len(new_pop) / 4):
+                    elite_pop.append(ind)
+            ### mating pool
+            m_pool = tournament(sorted_pop, len(new_pop) - len(elite_pop), problem)
+
+            ### operate on mating pool
+            off_1 = mate(m_pool)
+            offspring = mutate(off_1, 0.05)
+
+            ### recompose population
+            new_pop = elite_pop + offspring
+            for ind in new_pop:
+                ind.clear_values()
+            ### re_evaluate new_pop
+            for i in new_pop:
+                walkability(i)
+                structure(i)
+            hamming_dist(new_pop)
+            fronts2 = sort_pop_st(new_pop, problem)
+            new_pop = [ind for front in fronts2 for ind in front]
+
+            gens -= 1
+
+        output = pickle.dumps(new_pop)
+
+        return output
+    except Exception as ex:
+        print "evolve -> " , ex
+        print "evolve -> " + str(sys.exc_traceback.tb_lineno)
 
 
 
