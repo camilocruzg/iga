@@ -43,8 +43,9 @@ tcppart
 
 import socket
 import pickle
-import Init_Ind
 import sys
+import time
+
 #TODO can't work in windows
 def recvall(sock):
     BUFF_SIZE = 8192 # 8 KiB
@@ -52,16 +53,16 @@ def recvall(sock):
     while True:
         part = sock.recv(BUFF_SIZE)
         data += part
-        print sys.getsizeof(part)
+        time.sleep(0.001)
+        # print sys.getsizeof(part)
         if len(part) < BUFF_SIZE:
             break
     return data
 
-
 def tcp_con():
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    tcp_socket.connect(("localhost", 4000))
+    tcp_socket.connect(("localhost", 1337))
 
     the_type = "Init"
     popsize = 50
@@ -72,16 +73,17 @@ def tcp_con():
     # Protocol exchange - sends and receives
     tcp_socket.send(str(arg_json))
 
-    # resp = tcp_socket.recv(81920)
-    # print resp
+    # resp = tcp_socket.recv(8096)
+    # # # print resp
     # result = pickle.loads(resp)
     # # print type(result)
     # print result
 
+
     data = recvall(tcp_socket)
     result = pickle.loads(data)
 
-    # tcp_socket.close()
+    tcp_socket.close()
     return result
 
 

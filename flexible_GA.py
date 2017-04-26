@@ -4,6 +4,9 @@ import pickle
 from Init_Ind import Individual
 import traceback
 
+import threading
+
+# not being used in this stage
 def evolve(pop_size, ind_size, gens, problem, pop=[]):
     gens=int(gens)
     pop_size=int(pop_size)
@@ -130,8 +133,7 @@ def structure(ind):
         if x > 0:
             neigh.append(int(x - 1 + ind.xy + (y * (ind.s[0] * ind.s[2]))))
         if y > 0:
-            neigh.append(
-                int(y - 1 + ind.xy + ind.xz + (x * (ind.s[1] * ind.s[2]))))
+            neigh.append(int(y - 1 + ind.xy + ind.xz + (x * (ind.s[1] * ind.s[2]))))
         z = 0
         while z < int(ind.s[2]):
             n = []
@@ -166,8 +168,6 @@ def hamming_dist(pop):
     return pop
 
 def sort_pop_st(pop, problem):
-    foo = 0
-    bar = 0
     try:
         # new_pop is a list of pointers to the individuals in pop
         pop_ind = [i for i in range(len(pop))]  ###List of pointers to individuals in pop
@@ -185,10 +185,9 @@ def sort_pop_st(pop, problem):
                         dom[i].append(other)
                     if pop[other].dominates(pop[ind], problem):
                         dom_by[i].append(other)
-                bar += 1
+
             pop[ind].dom = dom[i]
             pop[ind].dom_by = dom_by[i]
-            foo += 1
         while len(pop_ind) > 0:
             fronts.append([])
             rem = []
@@ -210,13 +209,14 @@ def sort_pop_st(pop, problem):
         ff = [[pop[i] for i in f] for f in fronts]
         return ff
     except Exception as ex:
-        print str(foo), " and ", str(bar)
-        print pop[foo].values, pop[foo]
-        print pop[bar%50].values, pop[bar%50]
-        # print pop[(bar % 50) - 1].values
+
+        print str(i)," and ", str(j)
+        print pop[i].values, pop[i]
+        print pop[j].values, pop[j]
+
         # for each in pop:
         #     print each.values["structure"]
-        print "sort ->", traceback.print_exc()
+        print "sort ->", str(sys.exc_traceback.tb_lineno)
         print "sort -> " , ex
         # print "sort -> " + str(sys.exc_traceback.tb_lineno)
 
@@ -294,11 +294,14 @@ def get_json(pop):
 
 def evolve1(pop_size, ind_size, gens, problem, pop=[]):
     try:
+        print "the length of population is -> ", len(pop)
         gens = int(gens)
         pop_size = int(pop_size)
         ind_size = eval(ind_size)
         while len(pop) < pop_size:
             pop.append(Individual(ind_size))
+
+        print pop[1].l
 
         new_pop = pop
         for i in new_pop:
@@ -335,10 +338,12 @@ def evolve1(pop_size, ind_size, gens, problem, pop=[]):
             fronts2 = sort_pop_st(new_pop, problem)
             new_pop = [ind for front in fronts2 for ind in front]
 
+            # print threading.current_thread().getName() +  "  Number %dth loop is done"%(gens)
+
             gens -= 1
 
+        # output = pickle.dumps(new_pop[:10])
         output = pickle.dumps(new_pop)
-
         return output
     except Exception as ex:
         print "evolve -> " , ex
