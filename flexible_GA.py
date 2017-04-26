@@ -294,7 +294,7 @@ def get_json(pop):
 
 def evolve1(pop_size, ind_size, gens, problem, pop=[]):
     try:
-        print "the length of population is -> ", len(pop)
+        # print "the length of population is -> ", len(pop)
         gens = int(gens)
         pop_size = int(pop_size)
         ind_size = eval(ind_size)

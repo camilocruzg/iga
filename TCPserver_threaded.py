@@ -2,7 +2,7 @@ import socket
 import threading
 import flexible_GA
 import sys
-
+import struct
 
 class ThreadedServer(object):
     def __init__(self, host, port):
@@ -19,6 +19,11 @@ class ThreadedServer(object):
             connect, address = self.sock.accept()
             # client.settimeout(60)
             threading.Thread(target = self.listenToClient, args = (connect,address)).start()
+
+    def send_msg(self,connect, msg):
+        # Prefix each message with a 4-byte length (network byte order)
+        msg = struct.pack('>I', len(msg)) + msg
+        connect.sendall(msg)
 
     def listenToClient(self, connect, address):
         try:
@@ -42,7 +47,11 @@ class ThreadedServer(object):
                                                  recv_data["problem"], recv_data["pop"])
                     pass
 
-                connect.send(poplist)
+                # connect.sendall(poplist)
+                # connect.send(poplist)
+
+                self.send_msg(connect,poplist)
+
                 print threading.current_thread().getName() + " send the data with size of " + str(
                     sys.getsizeof(poplist))
 
@@ -79,6 +88,8 @@ class ThreadedServer(object):
             #     # print sys.exc_traceback.tb_lineno
             #     connect.close()
             #     return False
+
+
 
 if __name__ == "__main__":
     ThreadedServer('',1337).listen()
