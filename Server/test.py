@@ -41,35 +41,40 @@
 tcppart
 """
 
-import socket
-import pickle
-import Init_Ind
-import sys
+# import socket
+# import pickle
+# import Init_Ind
+# import sys
+#
+# # Set up a TCP/IP socket
+# tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#
+#
+# tcp_socket.connect(("localhost", 1337))
+#
+# the_type = "Init"
+# popsize = 50
+# indsize = str((2, 3, 4))
+# gens = 5
+# problem = "max"
+# arg_json = {"type": the_type, "popsize": popsize, "indsize": indsize, "gens": gens, "problem": problem}
+# # Protocol exchange - sends and receives
+# tcp_socket.send(str(arg_json))
+#
+# resp = tcp_socket.recv(81920)
+# # print resp
+# result = pickle.loads(resp)
+# # print type(result)
+# print result
+#
+#
+# tcp_socket.close()
+#
+# test_data = [[1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0]
+#     ,[1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+#
 
-# Set up a TCP/IP socket
-tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-
-tcp_socket.connect(("localhost", 1337))
-
-the_type = "Init"
-popsize = 50
-indsize = str((2, 3, 4))
-gens = 5
-problem = "max"
-arg_json = {"type": the_type, "popsize": popsize, "indsize": indsize, "gens": gens, "problem": problem}
-# Protocol exchange - sends and receives
-tcp_socket.send(str(arg_json))
-
-resp = tcp_socket.recv(81920)
-# print resp
-result = pickle.loads(resp)
-# print type(result)
-print result
-
-
-tcp_socket.close()
-
-test_data = [[1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0]
-    ,[1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
-
+f = open("seeds","w")
+f.write("hahaha")
+f.close()

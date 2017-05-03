@@ -2,93 +2,6 @@ from random import randint, random
 import sys
 import pickle
 from Init_Ind import Individual
-import traceback
-
-import threading
-
-# not being used in this stage
-def evolve(pop_size, ind_size, gens, problem, pop=[]):
-    gens=int(gens)
-    pop_size=int(pop_size)
-    ind_size=eval(ind_size)
-    ### check population size
-    while len(pop) < pop_size:
-        pop.append(Individual(ind_size))
-    # print 'the population is ', len(pop), 'individuals'
-
-    ### evaluate population
-    new_pop = pop
-    for i in new_pop:
-        walkability(i)
-        structure(i)
-    # print "walkability and structure done"
-    hamming_dist(new_pop)
-    # print "hamming dist done"
-
-    # pareto_fronts_out = []
-    # values_out = []
-    # full_pop_out = []
-
-    ### Evolution starts here
-    while gens > 0:
-        ### sort population
-        fronts = sort_pop_st(new_pop, problem)
-        sorted_pop = [ind for front in fronts for ind in front]
-
-        ### elite population
-        elite_pop = []
-        for ind in sorted_pop:
-            if ind not in elite_pop and len(elite_pop) < int(len(new_pop) / 4):
-                elite_pop.append(ind)
-        ### mating pool
-        m_pool = tournament(sorted_pop, len(new_pop) - len(elite_pop), problem)
-
-        ### operate on mating pool
-        off_1 = mate(m_pool)
-        offspring = mutate(off_1, 0.05)
-
-        ### recompose population
-        new_pop = elite_pop + offspring
-        for ind in new_pop:
-            ind.clear_values()
-        ### re_evaluate new_pop
-        for i in new_pop:
-            walkability(i)
-            structure(i)
-        hamming_dist(new_pop)
-        fronts2 = sort_pop_st(new_pop, problem)
-        new_pop = [ind for front in fronts2 for ind in front]
-
-        # pFront = fronts[0]
-        # pFront2 = []
-        # for ndf in pFront:
-        #     if ndf not in pFront2:
-        #         pFront2.append(ndf)
-        # pareto_fronts_out.append(pFront2)
-        # values_out.append([i.values for i in pFront2])
-        # srtd_pop = [ind for front in fronts2 for ind in front]
-        # full_pop_out.append(srtd_pop)
-        # print "Number %dth loop is done"%(gens)
-        gens -= 1
-    # print 'there are ', len(full_pop_out), 'in the pareto front'
-    # print pareto_fronts_out
-    # print values_out
-    # print full_pop_out
-
-    output = pickle.dumps(new_pop)
-
-    # json_output = json.dumps(get_json(new_pop))
-
-    # for each in output:
-    #     print type(each["graph"])
-    #     print type(each["values"])
-
-    # print "the size of result is " + str(sys.getsizeof(output))
-    # for each in new_pop:
-    #     print each.values
-    #     print each
-    return output
-
 
 def walkability(ind):
     g = ind.graph()
@@ -244,43 +157,51 @@ def tournament(pop, p_len, problem):
     return new_pop
 
 def mate(pop):
-    selected = []
-    new_pop = []
-    ni1 = None
-    ni2 = None
-    while len(new_pop) < len(pop):
-        if len(pop) % 2 == 1:
-            new_pop.append(pop[0])
-            selected.append(0)
-            del pop[0]
-        else:
-            r1 = randint(0, len(pop) - 1)
-            r2 = randint(0, len(pop) - 1)
-            if r1 in selected:
-                r1 = randint(0, len(pop) - 1)
-            elif r1 not in selected:
-                selected.append(r1)
-            if r2 in selected:
-                r2 = randint(0, len(pop) - 1)
-            elif r2 not in selected:
-                selected.append(r2)
-            p1 = randint(0, pop[r1].getLen() - 1)
-            p2 = randint(0, pop[r1].getLen() - 1)
-            p = sorted([p1, p2])
-            ni1 = pop[r1][:p[0]] + pop[r2][p[0]:p[1]] + pop[r1][p[1]:]
-            ni2 = pop[r2][:p[0]] + pop[r1][p[0]:p[1]] + pop[r2][p[1]:]
-        new_ind1 = Individual(pop[0].s, pop[0].p, ni1)
-        new_ind2 = Individual(pop[0].s, pop[0].p, ni2)
-        new_pop.append(new_ind1)
-        new_pop.append(new_ind2)
-    return new_pop
+    try:
+        new_pop = []
+        xy = pop[0].xy
+        xz = xy + pop[0].xz
+        while len(new_pop) < len(pop):
+            if len(pop) % 2 == 1:
+                new_pop.append(pop[0])
+                # selected.append(0)
+                del pop[0]
+            else:
+                parent1 = randint(0, len(pop) - 1)
+                parent2 = randint(0, len(pop) - 1)
+                p0 = randint(0, xy)
+                p1 = randint(xy, xz)
+                p2 = randint(xy, xz)
+                p3 = randint(xz, pop[parent1].getLen())
+                p = sorted([p0, p1, p2, p3])
+                ni1 = pop[parent1][:p[0]] + pop[parent2][p[0]:p[1]] + pop[parent1][p[1]:p[2]] + pop[parent2][
+                                                                                                p[2]:p[3]] + \
+                      pop[parent1][p[3]:]
+                ni2 = pop[parent2][:p[0]] + pop[parent1][p[0]:p[1]] + pop[parent2][p[1]:p[2]] + pop[parent1][
+                                                                                                p[2]:p[3]] + \
+                      pop[parent2][p[3]:]
+                new_ind1 = Individual(pop[0].s, pop[0].p, ni1)
+                new_ind2 = Individual(pop[0].s, pop[0].p, ni2)
+                new_pop.append(new_ind1)
+                new_pop.append(new_ind2)
+                #TODO
+                # del pop[parent1], pop[parent2]
+        return new_pop
+    except Exception as ex:
+        print "mate -> " , ex
+        print "mate -> " + str(sys.exc_traceback.tb_lineno)
+
+
 
 def mutate(pop, prob):
     for ind in pop:
+        print ind
         for bit in ind:
             r = random()
             if r < prob:
+                #TODO
                 bit = abs(bit - 1)
+        print ind
     return pop
 
 def get_json(pop):
@@ -292,12 +213,13 @@ def get_json(pop):
         output.append(ind_dict)
     return output
 
-def evolve1(pop_size, ind_size, gens, problem, pop=[]):
+def evolve(pop_size, ind_size, gens, problem, pop=[]):
     try:
         # print "the length of population is -> ", len(pop)
         gens = int(gens)
         pop_size = int(pop_size)
         ind_size = eval(ind_size)
+        print "the length of population is ", len(pop)
         while len(pop) < pop_size:
             pop.append(Individual(ind_size))
 
@@ -344,6 +266,7 @@ def evolve1(pop_size, ind_size, gens, problem, pop=[]):
 
         # output = pickle.dumps(new_pop[:10])
         output = pickle.dumps(new_pop)
+        # print type(new_pop)
         return output
     except Exception as ex:
         print "evolve -> " , ex
@@ -353,7 +276,6 @@ def evolve1(pop_size, ind_size, gens, problem, pop=[]):
 
 if __name__ == '__main__':
     s = (2, 3, 4)
-
     evolve(50, s, 5, 'max')
 
 
