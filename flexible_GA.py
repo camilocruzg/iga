@@ -1,4 +1,4 @@
-from random import randint, random
+from random import randint, random, sample
 import sys
 import pickle
 from Init_Ind import Individual
@@ -156,42 +156,32 @@ def tournament(pop, p_len, problem):
             _pop.remove(other)
     return new_pop
 
+
 def mate(pop):
-    try:
-        new_pop = []
-        xy = pop[0].xy
-        xz = xy + pop[0].xz
-        while len(new_pop) < len(pop):
-            if len(pop) % 2 == 1:
-                new_pop.append(pop[0])
-                # selected.append(0)
-                del pop[0]
-            else:
-                parent1 = randint(0, len(pop) - 1)
-                parent2 = randint(0, len(pop) - 1)
-                p0 = randint(0, xy)
-                p1 = randint(xy, xz)
-                p2 = randint(xy, xz)
-                p3 = randint(xz, pop[parent1].getLen())
-                p = sorted([p0, p1, p2, p3])
-                ni1 = pop[parent1][:p[0]] + pop[parent2][p[0]:p[1]] + pop[parent1][p[1]:p[2]] + pop[parent2][
-                                                                                                p[2]:p[3]] + \
-                      pop[parent1][p[3]:]
-                ni2 = pop[parent2][:p[0]] + pop[parent1][p[0]:p[1]] + pop[parent2][p[1]:p[2]] + pop[parent1][
-                                                                                                p[2]:p[3]] + \
-                      pop[parent2][p[3]:]
-                new_ind1 = Individual(pop[0].s, pop[0].p, ni1)
-                new_ind2 = Individual(pop[0].s, pop[0].p, ni2)
-                new_pop.append(new_ind1)
-                new_pop.append(new_ind2)
-                #TODO
-                # del pop[parent1], pop[parent2]
-        return new_pop
-    except Exception as ex:
-        print "mate -> " , ex
-        print "mate -> " + str(sys.exc_traceback.tb_lineno)
-
-
+    new_pop = []
+    ### This step makes the length of the population even
+    if len(pop) % 2 == 1:
+        new_pop.append(pop[0])
+        del pop[0]
+    ### Make a new list with the indices of the members of the population
+    pop_i = [i for i in range(len(pop))]
+    xy = pop[0].xy
+    xz = xy + pop[0].xz
+    while len(pop_i) > 0:
+        parent1, parent2 = sample(pop_i,2)
+        p0 = randint(0, xy)
+        p1 = randint(xy, xz)
+        p2 = randint(xy, xz)
+        p3 = randint(xz, pop[parent1].getLen())
+        p = sorted([p0, p1, p2, p3])
+        ni1 = pop[parent1][:p[0]] + pop[parent2][p[0]:p[1]] + pop[parent1][p[1]:p[2]] + pop[parent2][p[2]:p[3]] + pop[parent1][p[3]:]
+        ni2 = pop[parent2][:p[0]] + pop[parent1][p[0]:p[1]] + pop[parent2][p[1]:p[2]] + pop[parent1][p[2]:p[3]] + pop[parent2][p[3]:]
+        new_ind1 = Individual(pop[0].s, pop[0].p, ni1)
+        new_ind2 = Individual(pop[0].s, pop[0].p, ni2)
+        new_pop.append(new_ind1)
+        new_pop.append(new_ind2)
+        pop_i.remove(parent1), pop_i.remove(parent2)
+    return new_pop
 
 def mutate(pop, prob):
     for ind in pop:
@@ -218,7 +208,7 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
         # print "the length of population is -> ", len(pop)
         gens = int(gens)
         pop_size = int(pop_size)
-        ind_size = eval(ind_size)
+        # ind_size = eval(ind_size)
         print "the length of population is ", len(pop)
         while len(pop) < pop_size:
             pop.append(Individual(ind_size))
@@ -261,6 +251,7 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
             new_pop = [ind for front in fronts2 for ind in front]
 
             # print threading.current_thread().getName() +  "  Number %dth loop is done"%(gens)
+            print "  Number %dth loop is done"%(gens)
 
             gens -= 1
 
