@@ -185,13 +185,10 @@ def mate(pop):
 
 def mutate(pop, prob):
     for ind in pop:
-        print ind
-        for bit in ind:
+        for i,bit in enumerate(ind):
             r = random()
             if r < prob:
-                #TODO
-                bit = abs(bit - 1)
-        print ind
+                ind.c[i] = abs(bit - 1)
     return pop
 
 def get_json(pop):
