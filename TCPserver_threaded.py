@@ -26,9 +26,30 @@ class ThreadedServer(object):
         msg = struct.pack('>I', len(msg)) + msg
         connect.sendall(msg)
 
+    def recv_msg(self,sock):
+        # Read message length and unpack it into an integer
+        raw_msglen = self.recvall(sock, 4)
+        if not raw_msglen:
+            return None
+        msglen = struct.unpack('>I', raw_msglen)[0]
+        # Read the message data
+        return self.recvall(sock, msglen)
+
+    def recvall(self,sock, n):
+        # Helper function to recv n bytes or return None if EOF is hit
+        data = ''
+        while len(data) < n:
+            packet = sock.recv(n - len(data))
+            if not packet:
+                return None
+            data += packet
+        return data
+
     def listenToClient(self, connect, address):
         try:
-            data = (connect.recv(8192)).strip()
+            # data = (connect.recv(8192)).strip()
+            data = self.recv_msg(connect)
+            
             if data:
                 print threading.current_thread().getName() + " is receiving request with " + data
                 # print data
@@ -50,9 +71,6 @@ class ThreadedServer(object):
                                                  recv_data["problem"], the_seed)
 
 
-                # connect.sendall(poplist)
-                # connect.send(poplist)
-
                 self.send_msg(connect,poplist)
 
                 print threading.current_thread().getName() + " send the data with size of " + str(
@@ -62,7 +80,6 @@ class ThreadedServer(object):
 
         except Exception as ex:
             print threading.current_thread().getName() + " is quiting with error: ", ex
-            # print sys.exc_traceback.tb_lineno
             connect.close()
             return False
 

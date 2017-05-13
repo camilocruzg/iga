@@ -270,9 +270,8 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
             print "  Number %dth loop is done"%(gens)
 
             gens -= 1
-        for each in  new_pop[:10]:
-            print each.values
-        # output = pickle.dumps(new_pop[:10])
+        # for each in  new_pop[:10]:
+        #     print each.values
         output = pickle.dumps(new_pop)
         # print type(new_pop)
         return output
