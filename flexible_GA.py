@@ -63,9 +63,43 @@ def structure(ind):
             cols[i] = 1
         else:
             cols[i] = 0
-
     ind.values['structure'] = "%.3f" % (sum(cols) / float(len(cols)))
     return ind.values['structure']
+# def structure(ind):
+#     cols = []
+#     for i in range(int((ind.s[0] + 1) * (ind.s[1] + 1))):
+#         cols.append(0)
+#     for i, col in enumerate(cols):
+#         x = int(i % (ind.s[0] + 1))
+#         y = int(i // (ind.s[0] + 1))
+#         neigh = []  # right, front, left, back
+#         if x < ind.s[0]:  # right
+#             neigh.append(int(x + ind.xy + (y * (ind.s[0] * ind.s[2]))))
+#         if y < ind.s[1]:
+#             neigh.append(int(y + ind.xy + ind.xz + (x * (ind.s[1] * ind.s[2]))))
+#         if x > 0:
+#             neigh.append(int(x - 1 + ind.xy + (y * (ind.s[0] * ind.s[2]))))
+#         if y > 0:
+#             neigh.append(int(y - 1 + ind.xy + ind.xz + (x * (ind.s[1] * ind.s[2]))))
+#         z = 0
+#         while z < int(ind.s[2]):
+#             n = []
+#             for j in neigh:
+#                 if j < (ind.xy + ind.xz):
+#                     n.append(ind[j + (z * int(ind.s[0]))])
+#                 else:
+#                     n.append(ind[j + (z * int(ind.s[1]))])
+#             if sum(n) > 0:
+#                 cols[i] += 1
+#             z += 1
+#     for i in range(len(cols)):
+#         if cols[i] == ind.s[2]:
+#             cols[i] = 1
+#         else:
+#             cols[i] = 0
+#
+#     ind.values['structure'] = "%.3f" % (sum(cols) / float(len(cols)))
+#     return ind.values['structure']
 
 def hamming_dist(pop):
     for i, ind in enumerate(pop):
@@ -81,57 +115,45 @@ def hamming_dist(pop):
     return pop
 
 def sort_pop_st(pop, problem):
-    try:
-        # new_pop is a list of pointers to the individuals in pop
-        pop_ind = [i for i in range(len(pop))]  ###List of pointers to individuals in pop
-        # fronts is the output list
-        fronts = []
-        dom = []
-        dom_by = []
-        for i, ind in enumerate(pop_ind):
-            dom.append([])
-            dom_by.append([])
+    # new_pop is a list of pointers to the individuals in pop
+    pop_ind = [i for i in range(len(pop))]  ###List of pointers to individuals in pop
+    # fronts is the output list
+    fronts = []
+    dom = []
+    dom_by = []
+    for i, ind in enumerate(pop_ind):
+        dom.append([])
+        dom_by.append([])
 
-            for j, other in enumerate(pop_ind):
-                if ind != other:
-                    if pop[ind].dominates(pop[other], problem):
-                        dom[i].append(other)
-                    if pop[other].dominates(pop[ind], problem):
-                        dom_by[i].append(other)
+        for j, other in enumerate(pop_ind):
+            if ind != other:
+                if pop[ind].dominates(pop[other], problem):
+                    dom[i].append(other)
+                if pop[other].dominates(pop[ind], problem):
+                    dom_by[i].append(other)
 
-            pop[ind].dom = dom[i]
-            pop[ind].dom_by = dom_by[i]
-        while len(pop_ind) > 0:
-            fronts.append([])
-            rem = []
-            for i in range(len(pop_ind)):
-                if len(dom_by[pop_ind[i]]) == 0:
-                    fronts[-1].append(pop_ind[i])
-                    rem.append(pop_ind[i])
-            rank = []
-            for i in fronts[-1]:
-                rank.append(len(dom[i]))
-            # in python3, the key has to be declared with sorted() function
-            fronts[-1] = [i for (r, i) in sorted(zip(rank, fronts[-1]), reverse=True)]
-            pop_ind = [i for i in pop_ind if i not in rem]
-            for i in range(len(dom)):
-                dom[i] = [j for j in dom[i] if j not in rem]
-                dom_by[i] = [k for k in dom_by[i] if k not in rem]
+        pop[ind].dom = dom[i]
+        pop[ind].dom_by = dom_by[i]
+    while len(pop_ind) > 0:
+        fronts.append([])
+        rem = []
+        for i in range(len(pop_ind)):
+            if len(dom_by[pop_ind[i]]) == 0:
+                fronts[-1].append(pop_ind[i])
+                rem.append(pop_ind[i])
+        rank = []
+        for i in fronts[-1]:
+            rank.append(len(dom[i]))
+        # in python3, the key has to be declared with sorted() function
+        fronts[-1] = [i for (r, i) in sorted(zip(rank, fronts[-1]), reverse=True)]
+        pop_ind = [i for i in pop_ind if i not in rem]
+        for i in range(len(dom)):
+            dom[i] = [j for j in dom[i] if j not in rem]
+            dom_by[i] = [k for k in dom_by[i] if k not in rem]
 
-        # fronts_ind = [pop[ind] for row in fronts for ind in row]
-        ff = [[pop[i] for i in f] for f in fronts]
-        return ff
-    except Exception as ex:
-
-        print str(i)," and ", str(j)
-        print pop[i].values, pop[i]
-        print pop[j].values, pop[j]
-
-        # for each in pop:
-        #     print each.values["structure"]
-        print "sort ->", str(sys.exc_traceback.tb_lineno)
-        print "sort -> " , ex
-        # print "sort -> " + str(sys.exc_traceback.tb_lineno)
+    # fronts_ind = [pop[ind] for row in fronts for ind in row]
+    ff = [[pop[i] for i in f] for f in fronts]
+    return ff
 
 def tournament(pop, p_len, problem):
     _pop = pop
