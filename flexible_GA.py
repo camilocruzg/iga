@@ -33,7 +33,6 @@ def spaces(ind):
     ind.values['space'] = "%.3f" %((float(len(c)) - 1.0)/(float(possible_clusters)-1.0))
     return ind.values['space']
 
-
 def walkability(ind):
     g = ind.graph()
 
@@ -217,23 +216,32 @@ def get_json(pop):
         output.append(ind_dict)
     return output
 
-def evolve(pop_size, ind_size, gens, problem, pop=[]):
+def fit_function(pop,selection):
+    for each in pop:
+        if selection[0] == 1:
+            walkability(each)
+        if selection[1] == 1:
+            structure(each)
+        if selection[2] == 1:
+            spaces(each)
+
+def evolve(pop_size, ind_size, gens, problem, selection, pop=[]):
     try:
-        # print "the length of population is -> ", len(pop)
         gens = int(gens)
         pop_size = int(pop_size)
-        # ind_size = eval(ind_size)
+        ind_size = eval(ind_size)
+        selection = list(selection)
         print "the length of population is ", len(pop)
         while len(pop) < pop_size:
             pop.append(Individual(ind_size))
-
-        print pop[1].l
+        print "individual length",pop[1].l
 
         new_pop = pop
-        for i in new_pop:
-            spaces(i)
-            walkability(i)
-            structure(i)
+        fit_function(new_pop,selection)
+        # for i in new_pop:
+        #     spaces(i)
+        #     walkability(i)
+        #     structure(i)
         hamming_dist(new_pop)
 
         while gens > 0:
@@ -258,16 +266,19 @@ def evolve(pop_size, ind_size, gens, problem, pop=[]):
             for ind in new_pop:
                 ind.clear_values()
             ### re_evaluate new_pop
-            for i in new_pop:
-                walkability(i)
-                structure(i)
-                spaces(i)
+
+            fit_function(new_pop,selection)
+
+            # for i in new_pop:
+            #     walkability(i)
+            #     structure(i)
+            #     spaces(i)
             hamming_dist(new_pop)
             fronts2 = sort_pop_st(new_pop, problem)
             new_pop = [ind for front in fronts2 for ind in front]
 
             # print threading.current_thread().getName() +  "  Number %dth loop is done"%(gens)
-            print "  Number %dth loop is done"%(gens)
+            # print "  Number %dth loop is done"%(gens)
 
             gens -= 1
         # for each in  new_pop[:10]:

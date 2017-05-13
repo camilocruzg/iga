@@ -48,8 +48,8 @@ class ThreadedServer(object):
     def listenToClient(self, connect, address):
         try:
             # data = (connect.recv(8192)).strip()
-            data = self.recv_msg(connect)
-            
+            data = self.recv_msg(connect).strip()
+
             if data:
                 print threading.current_thread().getName() + " is receiving request with " + data
                 # print data
@@ -60,7 +60,7 @@ class ThreadedServer(object):
                 if recv_data["type"] == "Init":
                     # print threading.current_thread().getName() + " start initializing "
                     poplist = flexible_GA.evolve(recv_data["popsize"], recv_data["indsize"], recv_data["gens"],
-                                                  recv_data["problem"],pop = [])
+                                                  recv_data["problem"],recv_data['selection'],pop = [])
                     # print threading.current_thread().getName() + " the size of result is " + str(sys.getsizeof(poplist))
                     # print threading.current_thread().getName() + " all good"
 
@@ -68,7 +68,7 @@ class ThreadedServer(object):
                     the_seed = pickle.loads(recv_data["pop"])
                     # print the_seed
                     poplist = flexible_GA.evolve(recv_data["popsize"], recv_data["indsize"], recv_data["gens"],
-                                                 recv_data["problem"], the_seed)
+                                                 recv_data["problem"],recv_data['selection'], the_seed)
 
 
                 self.send_msg(connect,poplist)
