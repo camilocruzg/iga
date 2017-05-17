@@ -1,3 +1,4 @@
+#!/usr/bin/python2
 import socket
 import threading
 import flexible_GA
@@ -18,48 +19,47 @@ class ThreadedServer(object):
         print "the server is listening..."
         while True:
             connect, address = self.sock.accept()
-            # client.settimeout(60)
             threading.Thread(target = self.listenToClient, args = (connect,address)).start()
 
-    def send_msg(self,connect, msg):
+    def send_msg(self, sock, msg):
         # Prefix each message with a 4-byte length (network byte order)
         msg = struct.pack('>I', len(msg)) + msg
-        connect.sendall(msg)
+        sock.sendall(msg)
 
     def recv_msg(self,sock):
         # Read message length and unpack it into an integer
-        raw_msglen = self.recvall(sock, 4)
+        raw_msglen = self.recv_all(sock, 4)
         if not raw_msglen:
             return None
         msglen = struct.unpack('>I', raw_msglen)[0]
         # Read the message data
-        return self.recvall(sock, msglen)
+        return self.recv_all(sock, msglen)
 
-    def recvall(self,sock, n):
+    def recv_all(self, sock, prefix_len):
         # Helper function to recv n bytes or return None if EOF is hit
         data = ''
-        while len(data) < n:
-            packet = sock.recv(n - len(data))
+        while len(data) < prefix_len:
+            packet = sock.recv(prefix_len - len(data))
             if not packet:
                 return None
             data += packet
         return data
 
-    def listenToClient(self, connect, address):
+    def listenToClient(self, sock,address):
         try:
             # data = (connect.recv(8192)).strip()
-            data = self.recv_msg(connect).strip()
+            recv_data = self.recv_msg(sock).strip()
 
-            if data:
-                print threading.current_thread().getName() + " is receiving request with " + data
+            if recv_data:
+                print threading.current_thread().getName() + " is receiving request with " + recv_data
                 # print data
-                recv_data = eval(data)
+                recv_data = eval(recv_data)
                 # print type(recv_data)
 
-                poplist = []
+                pop_list = []
                 if recv_data["type"] == "Init":
                     # print threading.current_thread().getName() + " start initializing "
-                    poplist = flexible_GA.evolve(recv_data["popsize"], recv_data["indsize"], recv_data["gens"],
+                    pop_list = flexible_GA.evolve(recv_data["popsize"], recv_data["indsize"], recv_data["gens"],
                                                   recv_data["problem"],recv_data['selection'],pop = [])
                     # print threading.current_thread().getName() + " the size of result is " + str(sys.getsizeof(poplist))
                     # print threading.current_thread().getName() + " all good"
@@ -67,20 +67,20 @@ class ThreadedServer(object):
                 elif recv_data["type"] == "Seed":
                     the_seed = pickle.loads(recv_data["pop"])
                     # print the_seed
-                    poplist = flexible_GA.evolve(recv_data["popsize"], recv_data["indsize"], recv_data["gens"],
+                    pop_list = flexible_GA.evolve(recv_data["popsize"], recv_data["indsize"], recv_data["gens"],
                                                  recv_data["problem"],recv_data['selection'], the_seed)
 
 
-                self.send_msg(connect,poplist)
+                self.send_msg(sock, pop_list)
 
                 print threading.current_thread().getName() + " send the data with size of " + str(
-                    sys.getsizeof(poplist))
+                    sys.getsizeof(pop_list))
                 # print threading.current_thread().isAlive()
 
 
         except Exception as ex:
             print threading.current_thread().getName() + " is quiting with error: ", ex
-            connect.close()
+            sock.close()
             return False
 
 

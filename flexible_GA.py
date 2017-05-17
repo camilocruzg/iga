@@ -3,7 +3,7 @@ import sys
 import pickle
 from Init_Ind import Individual
 
-### returns Depth first search for graphs (returns sub-graphs of connected nodes)
+### returns Depth first Search for graphs (returns sub-graphs of connected nodes)
 def dfs(g, start):
     visited = set()
     stack = [start]
@@ -231,17 +231,14 @@ def evolve(pop_size, ind_size, gens, problem, selection, pop=[]):
         pop_size = int(pop_size)
         ind_size = eval(ind_size)
         selection = list(selection)
-        print "the length of population is ", len(pop)
+        print "the number of seeds is ", len(pop)
         while len(pop) < pop_size:
             pop.append(Individual(ind_size))
         print "individual length",pop[1].l
 
         new_pop = pop
         fit_function(new_pop,selection)
-        # for i in new_pop:
-        #     spaces(i)
-        #     walkability(i)
-        #     structure(i)
+
         hamming_dist(new_pop)
 
         while gens > 0:
@@ -255,24 +252,20 @@ def evolve(pop_size, ind_size, gens, problem, selection, pop=[]):
                 if ind not in elite_pop and len(elite_pop) < int(len(new_pop) / 4):
                     elite_pop.append(ind)
             ### mating pool
-            m_pool = tournament(sorted_pop, len(new_pop) - len(elite_pop), problem)
+            mate_pool = tournament(sorted_pop, len(new_pop) - len(elite_pop), problem)
 
             ### operate on mating pool
-            off_1 = mate(m_pool)
-            offspring = mutate(off_1, 0.05)
+            off_1 = mate(mate_pool)
+            off_spring = mutate(off_1, 0.05)
 
             ### recompose population
-            new_pop = elite_pop + offspring
+            new_pop = elite_pop + off_spring
             for ind in new_pop:
                 ind.clear_values()
             ### re_evaluate new_pop
 
             fit_function(new_pop,selection)
 
-            # for i in new_pop:
-            #     walkability(i)
-            #     structure(i)
-            #     spaces(i)
             hamming_dist(new_pop)
             fronts2 = sort_pop_st(new_pop, problem)
             new_pop = [ind for front in fronts2 for ind in front]
@@ -281,11 +274,10 @@ def evolve(pop_size, ind_size, gens, problem, selection, pop=[]):
             # print "  Number %dth loop is done"%(gens)
 
             gens -= 1
-        # for each in  new_pop[:10]:
-        #     print each.values
+
         output = pickle.dumps(new_pop)
-        # print type(new_pop)
         return output
+
     except Exception as ex:
         print "evolve -> " , ex
         print "evolve -> " + str(sys.exc_traceback.tb_lineno)
@@ -293,7 +285,5 @@ def evolve(pop_size, ind_size, gens, problem, selection, pop=[]):
 
 
 if __name__ == '__main__':
-    s = (2, 3, 4)
-    evolve(50, s, 5, 'max')
-
-
+    s = str((2, 3, 4))
+    evolve(50, s, 5,'max', [1,1,0])

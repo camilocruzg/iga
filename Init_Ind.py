@@ -11,6 +11,9 @@ class Individual(object):
                 else:
                     c.append(0)
             return c
+        self.x = size[0]
+        self.y = size[1]
+        self.z = size[2]
         self.xy = size[0]*size[1]*(size[2]+1)
         self.xz = size[0]*(size[1]+1)*size[2]
         self.yz = (size[0]+1)*size[1]*size[2]
@@ -114,6 +117,7 @@ class Individual(object):
             print "plane value has to be 'xy', 'xz' or 'yz'"
             return
         return shell
+
     ###Compares two individuals to check which one dominates
     def dominates(self, other, problem):
         dom = []
@@ -125,14 +129,6 @@ class Individual(object):
                 else:
                     dom.append(False)
         elif problem == 'max':
-            # for k in self.values.keys():
-            #     try:
-            #         if self.values[k] > other.values[k]:
-            #             dom.append(True)
-            #         else:
-            #             dom.append(False)
-            #     except:
-            #         dom.append(False)
             for k in self.values.keys():
                 if self.values[k] > other.values[k]:
                     dom.append(True)
