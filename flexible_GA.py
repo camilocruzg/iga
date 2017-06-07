@@ -1,9 +1,14 @@
+# for generate pseudo random number. Used for generate population,
 from random import randint, random, sample
-import sys
+# to serialize the data to make it transmissible
 import pickle
+# the user-defined class to instantiate "Individual" objects
 from Init_Ind import Individual
+# to log and print status
+import sys
 
-### returns Depth first Search for graphs (returns sub-graphs of connected nodes)
+
+# returns Depth first Search for graphs (returns sub-graphs of connected nodes)
 def dfs(g, start):
     visited = set()
     stack = [start]
@@ -14,25 +19,30 @@ def dfs(g, start):
             stack.extend(g[vertex] - visited)
     v_dict = {}
     for i in visited:
-        v_dict[i]=g[i]
+        v_dict[i] = g[i]
     return v_dict
 
-### returns the clusters from a graph
+
+# returns the clusters from a graph, used for space()
 def clusters(g):
     clust = []
     for node in g:
-            c = dfs(g,node)
-            if c not in clust:
-                clust.append(c)
+        c = dfs(g, node)
+        if c not in clust:
+            clust.append(c)
     return clust
 
+
+# fitness function: spatial continuity
 def spaces(ind):
     g = ind.graph()
     c = clusters(g)
-    possible_clusters = ind.s[0]*ind.s[1]*ind.s[2]
-    ind.values['space'] = "%.3f" %((float(len(c)) - 1.0)/(float(possible_clusters)-1.0))
+    possible_clusters = ind.s[0] * ind.s[1] * ind.s[2]
+    ind.values['space'] = "%.3f" % ((float(len(c)) - 1.0) / (float(possible_clusters) - 1.0))
     return ind.values['space']
 
+
+# fitness function: walkability
 def walkability(ind):
     g = ind.graph()
 
@@ -57,10 +67,12 @@ def walkability(ind):
             if i - ind.s[0] in g[i] and ind[i - ind.s[0]] == 1:
                 deg += 1
         w.append(float(deg) / pot)
-    ar = sum(w) / len(g.keys())  #accessibility ratio (how much of the potential accessibility is reached)
+    ar = sum(w) / len(g.keys())  # accessibility ratio (how much of the potential accessibility is reached)
     ind.values['walk'] = "%.3f" % ar
     return ind.values['walk']
 
+
+# fitness function: structure feasibility
 def structure(ind):
     cols = []
     for i in range(int((ind.s[0] + 1) * (ind.s[1] + 1))):
@@ -96,6 +108,8 @@ def structure(ind):
     ind.values['structure'] = "%.3f" % (sum(cols) / float(len(cols)))
     return ind.values['structure']
 
+
+# calculate the hamming distance. Used when domination ties.
 def hamming_dist(pop):
     for i, ind in enumerate(pop):
         hd = []
@@ -109,6 +123,8 @@ def hamming_dist(pop):
         ind.hd = sum(hd) / (len(pop) - 1)
     return pop
 
+
+# sort population
 def sort_pop_st(pop, problem):
     # new_pop is a list of pointers to the individuals in pop
     pop_ind = [i for i in range(len(pop))]  ###List of pointers to individuals in pop
@@ -150,6 +166,9 @@ def sort_pop_st(pop, problem):
     ff = [[pop[i] for i in f] for f in fronts]
     return ff
 
+
+# a dominance-based system: randomly chose two individual from the population and compete on against the other.
+# pick the winner who dominates the other one.
 def tournament(pop, p_len, problem):
     _pop = pop
     new_pop = []
@@ -173,6 +192,8 @@ def tournament(pop, p_len, problem):
             _pop.remove(other)
     return new_pop
 
+
+# 4-point cross-over mate
 def mate(pop):
     new_pop = []
     ### This step makes the length of the population even
@@ -184,14 +205,18 @@ def mate(pop):
     xy = pop[0].xy
     xz = xy + pop[0].xz
     while len(pop_i) > 0:
-        parent1, parent2 = sample(pop_i,2)
+        parent1, parent2 = sample(pop_i, 2)
         p0 = randint(0, xy)
         p1 = randint(xy, xz)
         p2 = randint(xy, xz)
         p3 = randint(xz, pop[parent1].getLen())
         p = sorted([p0, p1, p2, p3])
-        ni1 = pop[parent1][:p[0]] + pop[parent2][p[0]:p[1]] + pop[parent1][p[1]:p[2]] + pop[parent2][p[2]:p[3]] + pop[parent1][p[3]:]
-        ni2 = pop[parent2][:p[0]] + pop[parent1][p[0]:p[1]] + pop[parent2][p[1]:p[2]] + pop[parent1][p[2]:p[3]] + pop[parent2][p[3]:]
+        ni1 = pop[parent1][:p[0]] + pop[parent2][p[0]:p[1]] + pop[parent1][p[1]:p[2]] + pop[parent2][p[2]:p[3]] + pop[
+                                                                                                                      parent1][
+                                                                                                                  p[3]:]
+        ni2 = pop[parent2][:p[0]] + pop[parent1][p[0]:p[1]] + pop[parent2][p[1]:p[2]] + pop[parent1][p[2]:p[3]] + pop[
+                                                                                                                      parent2][
+                                                                                                                  p[3]:]
         new_ind1 = Individual(pop[0].s, pop[0].p, ni1)
         new_ind2 = Individual(pop[0].s, pop[0].p, ni2)
         new_pop.append(new_ind1)
@@ -199,14 +224,18 @@ def mate(pop):
         pop_i.remove(parent1), pop_i.remove(parent2)
     return new_pop
 
+
+# mutate the bit in individual with a rate of 5%
 def mutate(pop, prob):
     for ind in pop:
-        for i,bit in enumerate(ind):
+        for i, bit in enumerate(ind):
             r = random()
             if r < prob:
                 ind.c[i] = abs(bit - 1)
     return pop
 
+
+# parse json file
 def get_json(pop):
     output = []
     for each in pop:
@@ -216,7 +245,9 @@ def get_json(pop):
         output.append(ind_dict)
     return output
 
-def fit_function(pop,selection):
+
+# used for fitness function selection.
+def fit_function(pop, selection):
     for each in pop:
         if selection[0] == 1:
             walkability(each)
@@ -225,6 +256,8 @@ def fit_function(pop,selection):
         if selection[2] == 1:
             spaces(each)
 
+
+# the main function for genetic algorithm
 def evolve(pop_size, ind_size, gens, problem, selection, pop=[]):
     try:
         gens = int(gens)
@@ -234,10 +267,10 @@ def evolve(pop_size, ind_size, gens, problem, selection, pop=[]):
         print "the number of seeds is ", len(pop)
         while len(pop) < pop_size:
             pop.append(Individual(ind_size))
-        print "individual length",pop[1].l
+        # print "individual length",pop[1].l
 
         new_pop = pop
-        fit_function(new_pop,selection)
+        fit_function(new_pop, selection)
 
         hamming_dist(new_pop)
 
@@ -264,7 +297,7 @@ def evolve(pop_size, ind_size, gens, problem, selection, pop=[]):
                 ind.clear_values()
             ### re_evaluate new_pop
 
-            fit_function(new_pop,selection)
+            fit_function(new_pop, selection)
 
             hamming_dist(new_pop)
             fronts2 = sort_pop_st(new_pop, problem)
@@ -279,11 +312,11 @@ def evolve(pop_size, ind_size, gens, problem, selection, pop=[]):
         return output
 
     except Exception as ex:
-        print "evolve -> " , ex
+        print "evolve -> ", ex
         print "evolve -> " + str(sys.exc_traceback.tb_lineno)
 
 
-
+# test case
 if __name__ == '__main__':
     s = str((2, 3, 4))
-    evolve(50, s, 5,'max', [1,1,0])
+    evolve(50, s, 5, 'max', [1, 1, 0])
